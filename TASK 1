@@ -1,0 +1,42 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace homework
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Введите имя персонажа");
+            string name = Console.ReadLine();
+
+            Console.WriteLine("Введите его расу");
+            string race = Console.ReadLine();
+
+            Character character1 = new Character(name, race);
+            character1.GetInfo();
+        }
+    }
+
+    class Character
+    {
+        private string _name;
+        private string _race;
+
+        public string Name { get; }
+        public string Race { get; }
+
+        public Character(string name, string race)
+        {
+            _name = name;
+            _race = race;
+        }
+
+        public void GetInfo()
+        {
+            Console.WriteLine($"имя:{_name}, раса:{_race}");
+        }
+    }
+}
