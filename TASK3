@@ -1,1 +1,115 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
+namespace homework
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int inputCommandNumber = default;
+            List<Player> players = new List<Player>();
+
+            Console.WriteLine("Выберите команду: 1 - добавить игрока, 2 - удалить игрока, 3 - забанить/разбанить игрока, 4 - покинуть программу");
+            while (inputCommandNumber != 4)
+            {
+                int userCommand = Convert.ToInt32(Console.ReadLine());
+                switch (userCommand)
+                {
+                    case 1:
+                        Console.WriteLine("Введите особый номер игрока");
+                        int inputSerialNumber = int.Parse(Console.ReadLine());
+
+                        Console.WriteLine("Введите имя игрока");
+                        string inputPlayerName = Console.ReadLine();
+
+                        Console.WriteLine("Введите уровень игрока");
+                        int inputPlayerLevel = int.Parse(Console.ReadLine());
+
+                        Player player = new Player(inputSerialNumber, inputPlayerName, inputPlayerLevel);
+
+                        Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
+                        string inputPlayerStatus = "";
+                        while (inputPlayerStatus != "да" && inputPlayerStatus != "нет")
+                        {
+                            inputPlayerStatus = Console.ReadLine();
+                            if (inputPlayerStatus == "да")
+                            {
+                                player.IsBanned = true;
+                            }
+                            else if (inputPlayerStatus == "нет")
+                            {
+                                player.IsBanned = false;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Ошибка ввода, попробуйте еще раз");
+                            }
+                        }
+                        players.Add(player);
+                        Console.WriteLine("Игрок добавлен");
+                        break;
+                    case 2:
+                        ShowAllPlayers(players);
+                        Console.WriteLine("Введите особый номер игрока, которого хотите удалить");
+                        int findPlayerNumber = Convert.ToInt32(Console.ReadLine());
+                        //players.RemoveAt(findPlayerNumber-1);
+                        break;
+                    case 3:
+                        ShowAllPlayers(players);
+                        Console.WriteLine("Выберите игрока чтобы сменить его статус");
+                        
+                        break;
+                    case 4:
+                        Console.WriteLine("Вы покинули программу");
+                        break;
+                    default:
+                        Console.WriteLine("Такой команды нету");
+                        break;
+                }
+            } 
+        }
+
+        static void ShowAllPlayers(List<Player> players)
+        {
+            foreach (var player in players)
+            {
+                player.ShowPlayer();
+            }
+        }
+    }
+    
+    class Player
+    {
+        private int _serialNumber;
+        private string _nickname;
+        private int _level;
+        private bool _isBanned;
+
+        public bool IsBanned
+        {
+            get
+            {
+                return _isBanned;
+            }
+            set
+            {
+                _isBanned = value;
+            }
+        }
+
+        public Player(int serialNumber, string nickname, int level)
+        {
+            _serialNumber = serialNumber;
+            _nickname = nickname;
+            _level = level;
+        }
+
+        public void ShowPlayer()
+        {
+            Console.WriteLine($"Номер игрока - {_serialNumber}, Никнейм - {_nickname}, уровень - {_level}, забанен - {_isBanned}");
+        }
+    }
+}
