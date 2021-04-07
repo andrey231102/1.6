@@ -11,7 +11,7 @@ namespace homework
         {
             Player player1 = new Player(0,50);
             Renderer renderer1 = new Renderer();
-            renderer1.DrawHero(player1,'#');
+            renderer1.DrawHero(player1.XCoordinate, player1.YCoordinate,'#');
         }
     }
 
@@ -25,7 +25,7 @@ namespace homework
             get
             {
                 return _xCoordinate;
-            }   
+            }
         }
         public int YCoordinate
         {
@@ -44,9 +44,9 @@ namespace homework
 
     class Renderer
     {
-        public void DrawHero(Player player, char symbol)
+        public void DrawHero(int xCoordinate, int yCoordinate, char symbol)
         {
-            Console.SetCursorPosition(player.XCoordinate, player.YCoordinate);
+            Console.SetCursorPosition(xCoordinate, yCoordinate);
             Console.WriteLine(symbol);
         }
     }  
