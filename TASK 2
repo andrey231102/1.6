@@ -1,1 +1,53 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
+namespace homework
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Player player1 = new Player(0,50);
+            Renderer renderer1 = new Renderer();
+            renderer1.DrawHero(player1,'#');
+        }
+    }
+
+    class Player
+    {
+        private int _xCoordinate;
+        private int _yCoordinate;
+
+        public int XCoordinate 
+        {
+            get
+            {
+                return _xCoordinate;
+            }   
+        }
+        public int YCoordinate
+        {
+            get
+            {
+                return _yCoordinate;
+            }
+        }
+
+        public Player(int xCoordinate, int yCoordinate)
+        {
+            _xCoordinate = xCoordinate;
+            _yCoordinate = yCoordinate;
+        }
+    }
+
+    class Renderer
+    {
+        public void DrawHero(Player player, char symbol)
+        {
+            Console.SetCursorPosition(player.XCoordinate, player.YCoordinate);
+            Console.WriteLine(symbol);
+        }
+    }  
+}
