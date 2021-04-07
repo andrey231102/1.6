@@ -15,8 +15,9 @@ namespace homework
             Console.WriteLine("Введите его расу");
             string race = Console.ReadLine();
 
-            Character character1 = new Character(name, race);
-            character1.GetInfo();
+            Character character = new Character(name, race);
+            character.GetInfo();
+            Console.ReadLine();
         }
     }
 
@@ -24,9 +25,6 @@ namespace homework
     {
         private string _name;
         private string _race;
-
-        public string Name { get; }
-        public string Race { get; }
 
         public Character(string name, string race)
         {
