@@ -9,45 +9,31 @@ namespace homework
     {
         static void Main(string[] args)
         {
-            Player player1 = new Player(0,50);
-            Renderer renderer1 = new Renderer();
-            renderer1.DrawHero(player1.XCoordinate, player1.YCoordinate,'#');
+            Player player = new Player(0, 50);
+            Renderer renderer = new Renderer();
+            renderer.DrawHero(player, '#');
         }
     }
 
     class Player
     {
-        private int _xCoordinate;
-        private int _yCoordinate;
-
-        public int XCoordinate 
-        {
-            get
-            {
-                return _xCoordinate;
-            }
-        }
-        public int YCoordinate
-        {
-            get
-            {
-                return _yCoordinate;
-            }
-        }
+        public int XCoordinate { get; private set; }
+        
+        public int YCoordinate { get; private set; }
 
         public Player(int xCoordinate, int yCoordinate)
         {
-            _xCoordinate = xCoordinate;
-            _yCoordinate = yCoordinate;
+            XCoordinate = xCoordinate;
+            YCoordinate = yCoordinate;
         }
     }
 
     class Renderer
     {
-        public void DrawHero(int xCoordinate, int yCoordinate, char symbol)
+        public void DrawHero(Player player, char symbol)
         {
-            Console.SetCursorPosition(xCoordinate, yCoordinate);
+            Console.SetCursorPosition(player.XCoordinate, player.YCoordinate);
             Console.WriteLine(symbol);
         }
-    }  
+    }
 }
