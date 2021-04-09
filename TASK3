@@ -9,126 +9,12 @@ namespace homework
     {
         static void Main(string[] args)
         {
-            int inputCommandNumber = default;
-            List<Player> players = new List<Player>();
-
-            Console.WriteLine("Выберите команду: 1 - добавить игрока, 2 - удалить игрока, 3 - забанить/разбанить игрока, 4 - покинуть программу");
-            while (inputCommandNumber != 4)
-            {
-                int userCommand = Convert.ToInt32(Console.ReadLine());
-                switch (userCommand)
-                {
-                    case 1:
-                        Console.WriteLine("Введите особый номер игрока");
-                        int inputSerialNumber = Convert.ToInt32(Console.ReadLine());
-
-                        Console.WriteLine("Введите имя игрока");
-                        string inputPlayerName = Console.ReadLine();
-
-                        Console.WriteLine("Введите уровень игрока");
-                        int inputPlayerLevel = Convert.ToInt32(Console.ReadLine());
-
-                        Player player = new Player(inputSerialNumber, inputPlayerName, inputPlayerLevel);
-
-                        SetStatus(player);
-                        players.Add(player);
-
-                        Console.WriteLine("Игрок добавлен");
-                        break;
-                    case 2:
-                        DeletePlayer(players);
-                        break;
-                    case 3:
-                        ChangeStatus(players);
-                        break;
-                    case 4:
-                        Console.WriteLine("Вы покинули программу");
-                        break;
-                    default:
-                        Console.WriteLine("Такой команды нету");
-                        break;
-                }
-            }
-        }
-
-        static void DeletePlayer(List<Player>players)
-        {
-            if (players.Count <= 0)
-            {
-                Console.WriteLine("База данных пустая, попробуйте кого-то добавить");
-            }
-            else
-            {
-                ShowAllPlayers(players);
-                Console.WriteLine("Введите особый номер игрока, которого хотите удалить");
-                int findPlayerNumber = Convert.ToInt32(Console.ReadLine());
-
-                for (int i = 0; i < players.Count; i++)
-                {
-                    if (findPlayerNumber == players[i].SerialNumber)
-                    {
-                        players.RemoveAt(i);
-                        Console.WriteLine("Игрок удален");
-                    }
-                }
-            }
-            Console.WriteLine("Введите следующую команду");
-        }
-
-        static void ChangeStatus(List<Player> players)
-        {
-            if (players.Count <= 0)
-            {
-                Console.WriteLine("База данных пустая, попробуйте кого-то добавить");
-            }
-            else
-            {
-                ShowAllPlayers(players);
-                Console.WriteLine("Введите особый номер игрока чтобы сменить его статус");
-                int findPlayerNumber = Convert.ToInt32(Console.ReadLine());
-
-                for (int i = 0; i < players.Count; i++)
-                {
-                    if (findPlayerNumber == players[i].SerialNumber)
-                    {
-                        SetStatus(players[i]);
-                    }
-                }
-            }
-            Console.WriteLine("Введите следующую команду");
-        }
-
-        static void SetStatus(Player player)
-        {
-            Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
-
-            string inputPlayerStatus = default;
-            while (inputPlayerStatus != "да" && inputPlayerStatus != "нет")
-            {
-                inputPlayerStatus = Console.ReadLine();
-                if (inputPlayerStatus == "да")
-                {
-                    player.IsBanned = true;
-                }
-                else if (inputPlayerStatus == "нет")
-                {
-                    player.IsBanned = false;
-                }
-                else
-                {
-                    Console.WriteLine("Ошибка ввода, попробуйте еще раз");
-                }
-            }
-        }
-
-        static void ShowAllPlayers(List<Player> players)
-        {
-            foreach (var player in players)
-            {
-                player.ShowPlayer();
-            }
+            Database database = new Database();
+            database.Menu();
+            database.ShowData();
         }
     }
+    
 
     class Player
     {
@@ -137,15 +23,7 @@ namespace homework
         private int _level;
         private bool _isBanned;
 
-        public int SerialNumber
-        {
-            get
-            {
-                return _serialNumber;
-            }
-        }
-
-        public bool IsBanned
+        public bool IsBanned 
         {
             get
             {
@@ -167,6 +45,129 @@ namespace homework
         public void ShowPlayer()
         {
             Console.WriteLine($"Номер игрока - {_serialNumber}, Никнейм - {_nickname}, уровень - {_level}, забанен - {_isBanned}");
+        }
+    }
+
+    class Database
+    {
+        List<Player> players = new List<Player>();
+        public void ShowData()
+        {
+            int index = 1;
+            foreach (var player in players)
+            {
+                Console.Write(index + "- ");
+                player.ShowPlayer();
+                index++;
+            }
+        }
+
+        public void Menu()
+        {
+            Console.WriteLine("Выберите, что хотите сделать: 1 - добавить игрока 2 - забанить/разбанить игрока по порядковому номеру 3 - удалить игрока 4 - покинуть программу");
+            string userInput = default;
+            while (userInput!="4")
+            {
+                userInput = Console.ReadLine();
+                switch (userInput)
+                {
+                    case "1":
+                        Console.WriteLine("Введите идентификационный номер игрока: ");
+                        int userInputNumber = Convert.ToInt32(Console.ReadLine());
+
+                        Console.WriteLine("Введите никнейм игрока: ");
+                        string userInputNickname = Console.ReadLine();
+
+                        Console.WriteLine("Введите уровень игрока: ");
+                        int userInputLevel = Convert.ToInt32(Console.ReadLine());
+                        Player player = new Player(userInputNumber, userInputNickname, userInputLevel);
+
+                        Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
+                        string inputPlayerStatus = default;
+                        while (inputPlayerStatus != "да" && inputPlayerStatus != "нет")
+                        {
+                            inputPlayerStatus = Console.ReadLine();
+                            if (inputPlayerStatus == "да")
+                            {
+                                player.IsBanned = true;
+                            }
+                            else if (inputPlayerStatus == "нет")
+                            {
+                                player.IsBanned = false;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Ошибка ввода, попробуйте еще раз");
+                            }
+                            
+                        }
+                        players.Add(player);
+                        Console.WriteLine("Игрок добавлен введите следующую команду");
+                        break;
+                    case "2":
+                        if (players.Count <= 0)
+                        {
+                            Console.WriteLine("База данных пустая, попробуйте кого-то добавить");
+                        }
+                        else
+                        {
+                            ShowData();
+                            Console.WriteLine("Введите порядковый номер игрока, которого хотите удалить");
+                            int findPlayerNumber = Convert.ToInt32(Console.ReadLine()) - 1;
+
+                            if (findPlayerNumber > players.Count || findPlayerNumber < 0)
+                            {
+                                Console.WriteLine("Таких данных нету, введите другую команду");
+                            }
+                            else
+                            {
+                                players.RemoveAt(findPlayerNumber);
+                                Console.WriteLine("Игрок удален, введите следующую команду");
+                            }
+                        }
+                        break;
+                    case "3":
+                        if (players.Count <= 0)
+                        {
+                            Console.WriteLine("База данных пустая, попробуйте кого-то добавить");
+                        }
+                        else
+                        {
+                            ShowData();
+                            Console.WriteLine("Введите порядковый номер игрока, которого хотите удалить");
+                            int findPlayerNumber = Convert.ToInt32(Console.ReadLine()) - 1;
+                            
+                            if (findPlayerNumber > players.Count || findPlayerNumber < 0)
+                            {
+                                Console.WriteLine("Таких данных нету");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
+                                inputPlayerStatus = default;
+                                while (inputPlayerStatus != "да" && inputPlayerStatus != "нет")
+                                {
+                                    inputPlayerStatus = Console.ReadLine();
+                                    if (inputPlayerStatus == "да")
+                                    {
+                                        players[findPlayerNumber].IsBanned = true;
+                                    }
+                                    else if (inputPlayerStatus == "нет")
+                                    {
+                                        players[findPlayerNumber].IsBanned = false;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Ошибка ввода, попробуйте еще раз");
+                                    }
+                                }
+                            }
+                        }
+                        Console.WriteLine("Введите следующую команду");
+                        break;
+                }
+            }
+
         }
     }
 }
