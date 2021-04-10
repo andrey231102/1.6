@@ -22,7 +22,6 @@ namespace homework
         static Product bread = new Product(8, "хлеб");
 
         static List<Product> products = new List<Product> { sausage, milk, bread };
-
         int amountOfProducts = products.Count;
 
         Seller seller = new Seller(products);
