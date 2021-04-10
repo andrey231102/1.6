@@ -28,7 +28,7 @@ namespace homework
 
         private List<Product> _bag = new List<Product>();
 
-        public void AddProduct(int userInput)
+        public void AddToBag(int userInput)
         {
             _bag.Add(products[userInput]);
         }
@@ -41,7 +41,7 @@ namespace homework
             }
             else
             {
-                Console.Write("Я взял: ");
+                Console.WriteLine("Я взял: ");
                 foreach (var product in _bag)
                 {
                     product.ShowProduct();
@@ -67,7 +67,7 @@ namespace homework
                 }
                 else
                 {
-                    AddProduct(userInput);
+                    AddToBag(userInput);
                 }
             }
         }
