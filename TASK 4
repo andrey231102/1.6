@@ -17,54 +17,22 @@ namespace homework
 
     class Market
     {
-        public void Work()
-        {
-            Product sausage = new Product(80, "колбаса");
-            Product milk = new Product(30, "молоко");
-            Product bread = new Product(8, "хлеб");
+        static Product sausage = new Product(80, "колбаса");
+        static Product milk = new Product(30, "молоко");
+        static Product bread = new Product(8, "хлеб");
 
-            List<Product> products = new List<Product> { sausage, milk, bread };
+        static List<Product> products = new List<Product> { sausage, milk, bread };
 
-            Seller seller = new Seller(products);
+        int amountOfProducts = products.Count;
 
-            Customer customer = new Customer();
+        Seller seller = new Seller(products);
 
-            Console.WriteLine("Введите номер команды чтобы что-то произошло: 1 - попросить показать вам товары и их стоимость, 2 - купить товар, 3 - заглянуть в свою сумку, 4 - покинуть магазин");
-
-            string userInput = default;
-
-            do
-            {
-                userInput = Console.ReadLine();
-
-                switch (userInput)
-                {
-                    case "1":
-                        seller.ShowGoods(products);
-                        Console.WriteLine("Выберите следующую команду");
-                        break;
-                    case "2":
-                        customer.Buy(products);
-                        Console.WriteLine("Выберите следующую команду");
-                        break;
-                    case "3":
-                        customer.ShowBag();
-                        Console.WriteLine("Выберите следующую команду");
-                        break;
-                    case "4":
-                        Console.WriteLine("Заходите еще");
-                        break;
-                    default:
-                        Console.WriteLine("мы не выполянем таких услуг, мб вам надо что-то дургое ?");
-                        break;
-                }
-            } while (userInput != "4");
-        }
-    }
-
-    class Customer
-    {
         private List<Product> _bag = new List<Product>();
+
+        public void AddProduct(int userInput)
+        {
+            _bag.Add(products[userInput]);
+        }
 
         public void ShowBag()
         {
@@ -82,7 +50,7 @@ namespace homework
             }
         }
 
-        public void Buy(List <Product> products)
+        public void Buy(int amountOfProducts)
         {
             Console.WriteLine("предмет под каким новером вы хотите");
 
@@ -93,29 +61,63 @@ namespace homework
             }
             else
             {
-                userInput -= 1; 
-                if (userInput > products.Count || userInput < 1)
+                userInput -= 1;
+                if (userInput > amountOfProducts || userInput < 0)
                 {
                     Console.WriteLine("Таких предметов нету в списке");
                 }
                 else
                 {
-                    _bag.Add(products[userInput]);
+                    AddProduct(userInput);
                 }
             }
+        }
+
+        public void Work()
+        {
+            Console.WriteLine("Введите номер команды чтобы что-то произошло: 1 - попросить показать вам товары и их стоимость, 2 - купить товар, 3 - заглянуть в свою сумку, 4 - покинуть магазин");
+
+            string userInput = default;
+
+            do
+            {
+                userInput = Console.ReadLine();
+
+                switch (userInput)
+                {
+                    case "1":
+                        seller.ShowGoods();
+                        Console.WriteLine("Выберите следующую команду");
+                        break;
+                    case "2":
+                        Buy(amountOfProducts);
+                        Console.WriteLine("Выберите следующую команду");
+                        break;
+                    case "3":
+                        ShowBag();
+                        Console.WriteLine("Выберите следующую команду");
+                        break;
+                    case "4":
+                        Console.WriteLine("Заходите еще");
+                        break;
+                    default:
+                        Console.WriteLine("мы не выполянем таких услуг, мб вам надо что-то дургое ?");
+                        break;
+                }
+            } while (userInput != "4");
         }
     }
 
     class Seller
     {
-        private List<Product> _goods;
+        private List<Product> _goods;   
 
         public Seller(List<Product> goods)
         {
             _goods = goods;
         }
 
-        public void ShowGoods(List<Product> products)
+        public void ShowGoods()
         {
             int index = 1;
             Console.WriteLine("Я продаю: ");
