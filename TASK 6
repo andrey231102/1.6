@@ -22,93 +22,129 @@ namespace qwerty
 
             for (int i = 0; i < fighters.Length; i++)
             {
-                Console.Write($"{i+1} ");
+                Console.Write($"{i + 1} ");
                 fighters[i].ShowInfo();
             }
 
             Console.WriteLine("Выберите своего героя");
-            fighterIndex =int.Parse(Console.ReadLine()) - 1;
+            fighterIndex = int.Parse(Console.ReadLine()) - 1;
             Fighter myFighter = fighters[fighterIndex];
             Console.WriteLine("Выберите своего противника");
             fighterIndex = int.Parse(Console.ReadLine()) - 1;
             Fighter opponent = fighters[fighterIndex];
 
-            while (myFighter.IsAlive || opponent.IsAlive)
+            while (myFighter.Health > 0 && opponent.Health > 0)
             {
-                myFighter.TakeDamage(opponent.Damage);// как?????
-            }
+                myFighter.TakeDamage(opponent.Damage);
+                opponent.TakeDamage(myFighter.Damage);
+                myFighter.CastAbility();
+                opponent.CastAbility();
+                myFighter.ShowInfo();
+                opponent.ShowInfo();
 
+                if (myFighter.Health <= 0 && opponent.Health <= 0)
+                {
+                    Console.WriteLine("ничья");
+                }
+                else if (myFighter.Health <= 0)
+                {
+                    Console.WriteLine($"Ваш герой проиграл");
+                }
+                else if (opponent.Health <= 0)
+                {
+                    Console.WriteLine($"Ваш герой победил");
+                }
+                Console.ReadLine();
+            }
         }
     }
 
     class Fighter
     {
         protected string Name;
-        protected int Health;
+
         protected int Armor;
-        protected int Damage;
 
-        public bool IsAlive { get; set; }
+        public int Health { get; protected set; }
 
-        public Fighter(string name, int health, int armor, int damage, bool isAlive)
+        public int Damage { get; protected set; }
+
+        public string Skill { get; protected set; }
+
+        public Fighter(string name, int health, int armor, int damage, string skill)
         {
             Name = name;
             Health = health;
             Armor = armor;
             Damage = damage;
-            IsAlive = isAlive;
+            Skill = skill;
         }
 
         public void TakeDamage(int damage)
         {
             Health -= (damage - (Armor * damage) / 100);
+            Console.WriteLine($"{Name} получил {damage} урона");
         }
 
         public void ShowInfo()
         {
             Console.WriteLine($"{Name}. Количество хп - {Health}. Количество брони - {Armor}. Урон - {Damage}");
         }
+
+        public void CastAbility()
+        {
+            if (Skill == "укрепление")
+            {
+                Console.WriteLine("Герой использовал " + Skill);
+                Armor += 5;
+            }
+            if (Skill == "супер усиление спэлов")
+            {
+                Console.WriteLine("Герой использовал " + Skill);
+                Damage += 10;
+            }
+            if (Skill == "перекачка чакры")
+            {
+                Console.WriteLine("Герой использовал " + Skill);
+                Damage += 15;
+                Health -= 5;
+            }
+            if (Skill == "улучшение")
+            {
+                Console.WriteLine("Герой использовал " + Skill);
+                Damage += 5;
+                Health += 5;
+                Armor += 5;
+            }
+            if (Skill == "благословение")
+            {
+                Damage = Health;
+            }
+        }
     }
 
     class Knight : Fighter
     {
-        public Knight(int health, int damage) : base("knight", health, 40, damage, true) { }
-
-        public void TakeShield()
-        {
-            Armor += 20;
-            Damage -= 20;
-        }
+        public Knight(int health, int damage) : base("knight", health, 40, damage, "укрепление") { }
     }
 
     class Mage : Fighter
     {
-        public Mage(int health, int armor, int damage) : base("Mage", health, armor, damage, true) { }
-
-        public void BreakWeapon()
-        {
-
-        }
+        public Mage(int health, int armor, int damage) : base("Mage", health, armor, damage, "супер усиление спэлов") { }
     }
 
-    class Ninja:Fighter
+    class Ninja : Fighter
     {
-       public Ninja(int health, int armor, int damage) : base ("Ninja", health, armor, damage, true){}
-
-        public void Evade()
-        {
-
-        }
+        public Ninja(int health, int armor, int damage) : base("Ninja", health, armor, damage, "перекачка чакры") { }
     }
 
-    class RoboCop:Fighter
+    class RoboCop : Fighter
     {
-        public RoboCop(int health, int armor, int damage) : base("Robocop", health, armor, damage, true) { }
+        public RoboCop(int health, int armor, int damage) : base("Robocop", health, armor, damage, "улучшение") { }
     }
 
     class Exorcist : Fighter
     {
-        public Exorcist(int health, int armor, int damage) : base("Exorcist",health, armor, damage, true) { }
+        public Exorcist(int health, int armor, int damage) : base("Exorcist", health, armor, damage, "благословение") { }
     }
-
 }
