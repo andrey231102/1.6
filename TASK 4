@@ -25,8 +25,6 @@ namespace homework
 
             List<Product> products = new List<Product> { sausage, milk, bread };
 
-            int amountOfProducts = products.Count;
-
             Seller seller = new Seller(products);
 
             List<Product> _bag = new List<Product>();
@@ -52,9 +50,10 @@ namespace homework
                 _bag.Add(products[userInput]);
             }
 
-            void Buy(int amountOfProducts)
+            void Buy()
             {
                 Console.WriteLine("предмет под каким новером вы хотите");
+                int amountOfProducts = seller.CountProducts();
 
                 int userInput;
                 if (!int.TryParse(Console.ReadLine(), out userInput))
@@ -64,7 +63,7 @@ namespace homework
                 else
                 {
                     userInput -= 1;
-                    if (userInput > amountOfProducts || userInput < 0)
+                    if (userInput >amountOfProducts || userInput < 0)
                     {
                         Console.WriteLine("Таких предметов нету в списке");
                     }
@@ -90,7 +89,7 @@ namespace homework
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "2":
-                        Buy(amountOfProducts);
+                        Buy();
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "3":
@@ -111,6 +110,12 @@ namespace homework
     class Seller
     {
         private List<Product> _goods;
+
+        public int CountProducts()
+        {
+            int amountOfProducts = _goods.Count;
+            return amountOfProducts;
+        }
 
         public Seller(List<Product> goods)
         {
