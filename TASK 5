@@ -1,0 +1,67 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace poezd
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Train train = new Train();
+            train.SetDestination(train);
+            train.SellTickets(train);
+            train.CreateTrain(train);
+            Console.WriteLine($"Поезд {train.Departure} - {train.Destination} отправился в путь. В нем было {train.SoldTickets} и {train.Wagons} вагонов(без учета главного вагона)");
+        }
+    }
+
+    class Train
+    {
+        public string Departure { get; set; }
+        public string Destination { get; set; }
+        public int Wagons { get; set; }
+        public int WagonsCapacity { get; set; }
+        public int SoldTickets { get; set; }
+        Random random = new Random();
+
+        public void SetDestination(Train train)
+        {
+            Console.WriteLine("Откуда едем");
+            train.Departure = Console.ReadLine();
+
+            Console.WriteLine("Куда едем");
+            train.Destination = Console.ReadLine();
+
+            Console.WriteLine($"Направление {train.Departure} - {train.Destination} создано");
+        }
+
+        public void SellTickets(Train train)
+        {
+            train.SoldTickets = random.Next(100,501);
+            Console.WriteLine($"На маршрут {train.Departure} - {train.Destination} было продано {train.SoldTickets} билетов");
+        }
+
+        public void CreateTrain(Train train)
+        {
+            Console.WriteLine("Какие в поезде будут вагоны: крутые(25 мест в вагоне) или обычные(50 мест в вагоне)");
+            string userInput = Console.ReadLine();
+
+            switch (userInput)
+            {
+                case "крутые":
+                    train.WagonsCapacity = 25;
+                break;
+                case "обычные":
+                    train.WagonsCapacity = 50;
+                    break;
+                default:
+                    Console.WriteLine("Таких вагонов у нас нету");
+                    break;
+            }
+
+            train.Wagons = train.SoldTickets / train.WagonsCapacity;
+        }
+    }
+}
