@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace poezd
 {
     class Program
@@ -10,40 +5,45 @@ namespace poezd
         static void Main(string[] args)
         {
             Train train = new Train();
-            train.SetDestination(train);
-            train.SellTickets(train);
-            train.CreateTrain(train);
-            Console.WriteLine($"Поезд {train.Departure} - {train.Destination} отправился в путь. В нем было {train.SoldTickets} и {train.Wagons} вагонов(без учета главного вагона)");
+            Station station = new Station();
+            station.SetDestination(station);
+            station.SellTickets(station);
+            station.CreateWagons(train,station);
+            train.ShowInfo(station);
         }
     }
 
-    class Train
+    class Station
     {
         public string Departure { get; set; }
         public string Destination { get; set; }
+
         public int Wagons { get; set; }
+
         public int WagonsCapacity { get; set; }
+
         public int SoldTickets { get; set; }
+
         Random random = new Random();
 
-        public void SetDestination(Train train)
+        public void SetDestination(Station station)
         {
             Console.WriteLine("Откуда едем");
-            train.Departure = Console.ReadLine();
+            station.Departure = Console.ReadLine();
 
             Console.WriteLine("Куда едем");
-            train.Destination = Console.ReadLine();
+            station.Destination = Console.ReadLine();
 
-            Console.WriteLine($"Направление {train.Departure} - {train.Destination} создано");
+            Console.WriteLine($"Направление {station.Departure} - {station.Destination} создано");
         }
 
-        public void SellTickets(Train train)
+        public void SellTickets(Station station)
         {
-            train.SoldTickets = random.Next(100,501);
-            Console.WriteLine($"На маршрут {train.Departure} - {train.Destination} было продано {train.SoldTickets} билетов");
+            station.SoldTickets = random.Next(100, 501);
+            Console.WriteLine($"На маршрут {station.Departure} - {station.Destination} было продано {station.SoldTickets} билетов");
         }
 
-        public void CreateTrain(Train train)
+        public void CreateWagons(Train train, Station station)
         {
             Console.WriteLine("Какие в поезде будут вагоны: крутые(25 мест в вагоне) или обычные(50 мест в вагоне)");
             string userInput = Console.ReadLine();
@@ -51,17 +51,34 @@ namespace poezd
             switch (userInput)
             {
                 case "крутые":
-                    train.WagonsCapacity = 25;
-                break;
+                    station.WagonsCapacity = 25;
+                    break;
                 case "обычные":
-                    train.WagonsCapacity = 50;
+                    station.WagonsCapacity = 50;
                     break;
                 default:
                     Console.WriteLine("Таких вагонов у нас нету");
                     break;
             }
 
-            train.Wagons = train.SoldTickets / train.WagonsCapacity;
+            if (station.SoldTickets % station.WagonsCapacity ==0)
+            {
+                train.Wagons = station.SoldTickets / station.WagonsCapacity;
+            }
+            else
+            {
+                train.Wagons = (station.SoldTickets / station.WagonsCapacity) + 1;
+            }
+        }
+    }
+
+    class Train
+    {
+        public int Wagons{get; set;}
+
+        public void ShowInfo(Station station)
+        {
+            Console.WriteLine($"Поезд {station.Departure} - {station.Destination} отправился в путь. В нем было {station.SoldTickets} пасажиров и {Wagons} вагонов(без учета главного вагона)");
         }
     }
 }
