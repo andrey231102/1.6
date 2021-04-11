@@ -12,68 +12,69 @@ namespace homework
             Market market = new Market();
 
             market.Work();
-        } 
+        }
     }
 
     class Market
     {
-        static Product sausage = new Product(80, "колбаса");
-        static Product milk = new Product(30, "молоко");
-        static Product bread = new Product(8, "хлеб");
-
-        static List<Product> products = new List<Product> { sausage, milk, bread };
-        int amountOfProducts = products.Count;
-
-        Seller seller = new Seller(products);
-
-        private List<Product> _bag = new List<Product>();
-
-        public void AddToBag(int userInput)
+        public void Work()
         {
-            _bag.Add(products[userInput]);
-        }
+            Product sausage = new Product(80, "колбаса");
+            Product milk = new Product(30, "молоко");
+            Product bread = new Product(8, "хлеб");
 
-        public void ShowBag()
-        {
-            if (_bag.Count == 0)
+            List<Product> products = new List<Product> { sausage, milk, bread };
+
+            int amountOfProducts = products.Count;
+
+            Seller seller = new Seller(products);
+
+            List<Product> _bag = new List<Product>();
+
+            void ShowBag()
             {
-                Console.WriteLine("моя сумка пока-что пустая");
-            }
-            else
-            {
-                Console.WriteLine("Я взял: ");
-                foreach (var product in _bag)
+                if (_bag.Count == 0)
                 {
-                    product.ShowProduct();
-                }
-            }
-        }
-
-        public void Buy(int amountOfProducts)
-        {
-            Console.WriteLine("предмет под каким новером вы хотите");
-
-            int userInput;
-            if (!int.TryParse(Console.ReadLine(), out userInput))
-            {
-                Console.WriteLine("Это не число");
-            }
-            else
-            {
-                userInput -= 1;
-                if (userInput > amountOfProducts || userInput < 0)
-                {
-                    Console.WriteLine("Таких предметов нету в списке");
+                    Console.WriteLine("моя сумка пока-что пустая");
                 }
                 else
                 {
-                    AddToBag(userInput);
+                    Console.Write("Я взял: ");
+                    foreach (var product in _bag)
+                    {
+                        product.Show();
+                    }
                 }
             }
-        }
 
-        public void Work()
-        {
+            void AddToBag(int userInput)
+            {
+                _bag.Add(products[userInput]);
+            }
+
+            void Buy(int amountOfProducts)
+            {
+                Console.WriteLine("предмет под каким новером вы хотите");
+
+                int userInput;
+                if (!int.TryParse(Console.ReadLine(), out userInput))
+                {
+                    Console.WriteLine("Это не число");
+                }
+                else
+                {
+                    userInput -= 1;
+                    if (userInput > amountOfProducts || userInput < 0)
+                    {
+                        Console.WriteLine("Таких предметов нету в списке");
+                    }
+                    else
+                    {
+                        AddToBag(userInput);
+                    }
+                }
+            }
+
             Console.WriteLine("Введите номер команды чтобы что-то произошло: 1 - попросить показать вам товары и их стоимость, 2 - купить товар, 3 - заглянуть в свою сумку, 4 - покинуть магазин");
 
             string userInput = default;
@@ -85,7 +86,7 @@ namespace homework
                 switch (userInput)
                 {
                     case "1":
-                        seller.ShowGoods();
+                        seller.ShowGoods(products);
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "2":
@@ -109,21 +110,22 @@ namespace homework
 
     class Seller
     {
-        private List<Product> _goods;   
+        private List<Product> _goods;
 
         public Seller(List<Product> goods)
         {
             _goods = goods;
         }
 
-        public void ShowGoods()
+        public void ShowGoods(List<Product> products)
         {
             int index = 1;
             Console.WriteLine("Я продаю: ");
+
             foreach (var product in _goods)
             {
                 Console.Write(index + ".");
-                product.ShowProduct();
+                product.Show();
                 index++;
             }
         }
@@ -140,7 +142,7 @@ namespace homework
             _name = name;
         }
 
-        public void ShowProduct()
+        public void Show()
         {
             Console.WriteLine($" {_name} - {_cost} гривен");
         }
