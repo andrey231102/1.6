@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace poezd
 {
     class Program
@@ -12,7 +17,7 @@ namespace poezd
             train.ShowInfo(station);
         }
     }
-
+        
     class Station
     {
         public string Departure { get; set; }
