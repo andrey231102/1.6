@@ -1,0 +1,114 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace qwerty
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int fighterIndex;
+
+            Fighter[] fighters =
+            {
+                new Knight(200, 40),
+                new Mage(120, 10, 80),
+                new Ninja(150, 20, 70),
+                new RoboCop(200, 30, 50),
+                new Exorcist(150, 25, 60)
+            };
+
+            for (int i = 0; i < fighters.Length; i++)
+            {
+                Console.Write($"{i+1} ");
+                fighters[i].ShowInfo();
+            }
+
+            Console.WriteLine("Выберите своего героя");
+            fighterIndex =int.Parse(Console.ReadLine()) - 1;
+            Fighter myFighter = fighters[fighterIndex];
+            Console.WriteLine("Выберите своего противника");
+            fighterIndex = int.Parse(Console.ReadLine()) - 1;
+            Fighter opponent = fighters[fighterIndex];
+
+            while (myFighter.IsAlive || opponent.IsAlive)
+            {
+                myFighter.TakeDamage(opponent.Damage);// как?????
+            }
+
+        }
+    }
+
+    class Fighter
+    {
+        protected string Name;
+        protected int Health;
+        protected int Armor;
+        protected int Damage;
+
+        public bool IsAlive { get; set; }
+
+        public Fighter(string name, int health, int armor, int damage, bool isAlive)
+        {
+            Name = name;
+            Health = health;
+            Armor = armor;
+            Damage = damage;
+            IsAlive = isAlive;
+        }
+
+        public void TakeDamage(int damage)
+        {
+            Health -= (damage - (Armor * damage) / 100);
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"{Name}. Количество хп - {Health}. Количество брони - {Armor}. Урон - {Damage}");
+        }
+    }
+
+    class Knight : Fighter
+    {
+        public Knight(int health, int damage) : base("knight", health, 40, damage, true) { }
+
+        public void TakeShield()
+        {
+            Armor += 20;
+            Damage -= 20;
+        }
+    }
+
+    class Mage : Fighter
+    {
+        public Mage(int health, int armor, int damage) : base("Mage", health, armor, damage, true) { }
+
+        public void BreakWeapon()
+        {
+
+        }
+    }
+
+    class Ninja:Fighter
+    {
+       public Ninja(int health, int armor, int damage) : base ("Ninja", health, armor, damage, true){}
+
+        public void Evade()
+        {
+
+        }
+    }
+
+    class RoboCop:Fighter
+    {
+        public RoboCop(int health, int armor, int damage) : base("Robocop", health, armor, damage, true) { }
+    }
+
+    class Exorcist : Fighter
+    {
+        public Exorcist(int health, int armor, int damage) : base("Exorcist",health, armor, damage, true) { }
+    }
+
+}
