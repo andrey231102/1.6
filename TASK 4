@@ -3,153 +3,170 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace homework
+namespace qwerty
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Market market = new Market();
+            int fighterIndex = default;
 
-            market.Work();
+            Fighter[] fighters =
+            {
+                new Knight(200, 40),
+                new Mage(120, 10, 80),
+                new Ninja(150, 20, 70),
+                new RoboCop(200, 30, 50),
+                new Exorcist(150, 25, 60)
+            };
+
+            for (int i = 0; i < fighters.Length; i++)
+            {
+                Console.Write($"{i + 1} ");
+                fighters[i].ShowInfo();
+            }
+
+            Console.WriteLine("Выберите номер своего героя");
+            Fighter myFighter = ChooseFighter(fighters, fighterIndex);
+            Console.WriteLine("Выберите номер своего противника");
+            Fighter opponent = ChooseFighter(fighters, fighterIndex);
+
+            while (myFighter.Health > 0 && opponent.Health > 0)
+            {
+                myFighter.TakeDamage(opponent.Damage);
+                opponent.TakeDamage(myFighter.Damage);
+                myFighter.CastAbility();
+                opponent.CastAbility();
+                myFighter.ShowInfo();
+                opponent.ShowInfo();
+
+                if (myFighter.Health <= 0 && opponent.Health <= 0)
+                {
+                    Console.WriteLine("ничья");
+                }
+                else if (myFighter.Health <= 0)
+                {
+                    Console.WriteLine($"Ваш герой проиграл");
+                }
+                else if (opponent.Health <= 0)
+                {
+                    Console.WriteLine($"Ваш герой победил");
+                }
+                Console.ReadLine();
+            }
         }
-    }
 
-    class Market
-    {
-        public void Work()
+        static Fighter ChooseFighter(Fighter []fighters, int fighterIndex)
         {
-            Product sausage = new Product(80, "колбаса");
-            Product milk = new Product(30, "молоко");
-            Product bread = new Product(8, "хлеб");
-
-            List<Product> products = new List<Product> { sausage, milk, bread };
-
-            Seller seller = new Seller(products);
-
-            List<Product> _bag = new List<Product>();
-
-            void ShowBag()
+            bool isWorking = true;
+            while (isWorking)
             {
-                if (_bag.Count == 0)
-                {
-                    Console.WriteLine("моя сумка пока-что пустая");
-                }
-                else
-                {
-                    Console.Write("Я взял: ");
-                    foreach (var product in _bag)
-                    {
-                        product.Show();
-                    }
-                }
-            }
-
-            void AddToBag(int userInput)
-            {
-                _bag.Add(products[userInput]);
-            }
-
-            void Buy()
-            {
-                Console.WriteLine("предмет под каким новером вы хотите");
-                int amountOfProducts = seller.CountProducts();
-
-                int userInput;
-                if (!int.TryParse(Console.ReadLine(), out userInput))
+                if (!int.TryParse(Console.ReadLine(), out fighterIndex))
                 {
                     Console.WriteLine("Это не число");
                 }
                 else
                 {
-                    userInput -= 1;
-                    if (userInput >amountOfProducts || userInput < 0)
+                    if (fighterIndex > fighters.Length || fighterIndex <= 0)
                     {
-                        Console.WriteLine("Таких предметов нету в списке");
+                        Console.WriteLine("Таких героев нету в списке");
                     }
                     else
                     {
-                        AddToBag(userInput);
+                        isWorking = false;
                     }
                 }
             }
-
-            Console.WriteLine("Введите номер команды чтобы что-то произошло: 1 - попросить показать вам товары и их стоимость, 2 - купить товар, 3 - заглянуть в свою сумку, 4 - покинуть магазин");
-
-            string userInput = default;
-
-            do
-            {
-                userInput = Console.ReadLine();
-
-                switch (userInput)
-                {
-                    case "1":
-                        seller.ShowGoods(products);
-                        Console.WriteLine("Выберите следующую команду");
-                        break;
-                    case "2":
-                        Buy();
-                        Console.WriteLine("Выберите следующую команду");
-                        break;
-                    case "3":
-                        ShowBag();
-                        Console.WriteLine("Выберите следующую команду");
-                        break;
-                    case "4":
-                        Console.WriteLine("Заходите еще");
-                        break;
-                    default:
-                        Console.WriteLine("мы не выполянем таких услуг, мб вам надо что-то дургое ?");
-                        break;
-                }
-            } while (userInput != "4");
+            return fighters[fighterIndex];
         }
     }
 
-    class Seller
+    class Fighter
     {
-        private List<Product> _goods;
+        protected string Name;
 
-        public int CountProducts()
+        protected int Armor;
+
+        public int Health { get; protected set; }
+
+        public int Damage { get; protected set; }
+
+        public string Skill { get; protected set; }
+
+        public Fighter(string name, int health, int armor, int damage, string skill)
         {
-            int amountOfProducts = _goods.Count;
-            return amountOfProducts;
+            Name = name;
+            Health = health;
+            Armor = armor;
+            Damage = damage;
+            Skill = skill;
         }
 
-        public Seller(List<Product> goods)
+        public void TakeDamage(int damage)
         {
-            _goods = goods;
+            Health -= (damage - (Armor * damage) / 100);
+            Console.WriteLine($"{Name} получил {damage} урона");
         }
 
-        public void ShowGoods(List<Product> products)
+        public void ShowInfo()
         {
-            int index = 1;
-            Console.WriteLine("Я продаю: ");
+            Console.WriteLine($"{Name}. Количество хп - {Health}. Количество брони - {Armor}. Урон - {Damage}");
+        }
 
-            foreach (var product in _goods)
+        public void CastAbility()
+        {
+            if (Skill == "укрепление")
             {
-                Console.Write(index + ".");
-                product.Show();
-                index++;
+                Console.WriteLine("Герой использовал " + Skill);
+                Armor += 5;
+            }
+            if (Skill == "супер усиление спэлов")
+            {
+                Console.WriteLine("Герой использовал " + Skill);
+                Damage += 10;
+            }
+            if (Skill == "перекачка чакры")
+            {
+                Console.WriteLine("Герой использовал " + Skill);
+                Damage += 15;
+                Health -= 5;
+            }
+            if (Skill == "улучшение")
+            {
+                Console.WriteLine("Герой использовал " + Skill);
+                Damage += 5;
+                Health += 5;
+                Armor += 5;
+            }
+            if (Skill == "благословение")
+            {
+                Damage = Health;
             }
         }
     }
 
-    class Product
+    class Knight : Fighter
     {
-        private int _cost;
-        private string _name;
+        public Knight(int health, int damage) : base("knight", health, 40, damage, "укрепление") { }
+    }
 
-        public Product(int cost, string name)
-        {
-            _cost = cost;
-            _name = name;
-        }
+    class Mage : Fighter
+    {
+        public Mage(int health, int armor, int damage) : base("Mage", health, armor, damage, "супер усиление спэлов") { }
+    }
 
-        public void Show()
-        {
-            Console.WriteLine($" {_name} - {_cost} гривен");
-        }
+    class Ninja : Fighter
+    {
+        public Ninja(int health, int armor, int damage) : base("Ninja", health, armor, damage, "перекачка чакры") { }
+    }
+
+    class RoboCop : Fighter
+    {
+        public RoboCop(int health, int armor, int damage) : base("Robocop", health, armor, damage, "улучшение") { }
+    }
+
+    class Exorcist : Fighter
+    {
+        public Exorcist(int health, int armor, int damage) : base("Exorcist", health, armor, damage, "благословение") { }
     }
 }
