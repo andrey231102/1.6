@@ -83,6 +83,8 @@ namespace qwerty
 
     class Fighter
     {
+        private string _skill;
+
         protected string Name;
 
         protected int Armor;
@@ -90,8 +92,6 @@ namespace qwerty
         public int Health { get; private set; }
 
         public int Damage { get; private set; }
-
-        private string _skill;
 
         public Fighter(string name, int health, int armor, int damage, string skill)
         {
