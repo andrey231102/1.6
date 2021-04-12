@@ -9,7 +9,7 @@ namespace qwerty
     {
         static void Main(string[] args)
         {
-            int fighterIndex;
+            int fighterIndex = default;
 
             Fighter[] fighters =
             {
@@ -26,12 +26,10 @@ namespace qwerty
                 fighters[i].ShowInfo();
             }
 
-            Console.WriteLine("Выберите своего героя");
-            fighterIndex = int.Parse(Console.ReadLine()) - 1;
-            Fighter myFighter = fighters[fighterIndex];
-            Console.WriteLine("Выберите своего противника");
-            fighterIndex = int.Parse(Console.ReadLine()) - 1;
-            Fighter opponent = fighters[fighterIndex];
+            Console.WriteLine("Выберите номер своего героя");
+            Fighter myFighter = ChooseFighter(fighters, fighterIndex);
+            Console.WriteLine("Выберите номер своего противника");
+            Fighter opponent = ChooseFighter(fighters, fighterIndex);
 
             while (myFighter.Health > 0 && opponent.Health > 0)
             {
@@ -57,6 +55,30 @@ namespace qwerty
                 Console.ReadLine();
             }
         }
+
+        static Fighter ChooseFighter(Fighter []fighters, int fighterIndex)
+        {
+            bool isWorking = true;
+            while (isWorking)
+            {
+                if (!int.TryParse(Console.ReadLine(), out fighterIndex))
+                {
+                    Console.WriteLine("Это не число");
+                }
+                else
+                {
+                    if (fighterIndex > fighters.Length || fighterIndex <= 0)
+                    {
+                        Console.WriteLine("Таких героев нету в списке");
+                    }
+                    else
+                    {
+                        isWorking = false;
+                    }
+                }
+            }
+            return fighters[fighterIndex];
+        }
     }
 
     class Fighter
@@ -65,11 +87,11 @@ namespace qwerty
 
         protected int Armor;
 
-        public int Health { get; protected set; }
+        public int Health { get; private set; }
 
-        public int Damage { get; protected set; }
+        public int Damage { get; private set; }
 
-        public string Skill { get; protected set; }
+        private string _skill;
 
         public Fighter(string name, int health, int armor, int damage, string skill)
         {
@@ -77,7 +99,7 @@ namespace qwerty
             Health = health;
             Armor = armor;
             Damage = damage;
-            Skill = skill;
+            _skill = skill;
         }
 
         public void TakeDamage(int damage)
@@ -93,30 +115,30 @@ namespace qwerty
 
         public void CastAbility()
         {
-            if (Skill == "укрепление")
+            if (_skill == "укрепление")
             {
-                Console.WriteLine("Герой использовал " + Skill);
+                Console.WriteLine("Герой использовал " + _skill);
                 Armor += 5;
             }
-            if (Skill == "супер усиление спэлов")
+            if (_skill == "супер усиление спэлов")
             {
-                Console.WriteLine("Герой использовал " + Skill);
+                Console.WriteLine("Герой использовал " + _skill);
                 Damage += 10;
             }
-            if (Skill == "перекачка чакры")
+            if (_skill == "перекачка чакры")
             {
-                Console.WriteLine("Герой использовал " + Skill);
+                Console.WriteLine("Герой использовал " + _skill);
                 Damage += 15;
                 Health -= 5;
             }
-            if (Skill == "улучшение")
+            if (_skill == "улучшение")
             {
-                Console.WriteLine("Герой использовал " + Skill);
+                Console.WriteLine("Герой использовал " + _skill);
                 Damage += 5;
                 Health += 5;
                 Armor += 5;
             }
-            if (Skill == "благословение")
+            if (_skill == "благословение")
             {
                 Damage = Health;
             }
