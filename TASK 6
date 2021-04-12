@@ -83,11 +83,11 @@ namespace qwerty
 
     class Fighter
     {
-        private string _skill;
-
         protected string Name;
 
         protected int Armor;
+
+        private string _skill;
 
         public int Health { get; private set; }
 
