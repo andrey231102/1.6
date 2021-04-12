@@ -56,7 +56,7 @@ namespace qwerty
             }
         }
 
-        static Fighter ChooseFighter(Fighter []fighters, int fighterIndex)
+        static Fighter ChooseFighter(Fighter[] fighters, int fighterIndex)
         {
             bool isWorking = true;
             while (isWorking)
@@ -77,15 +77,15 @@ namespace qwerty
                     }
                 }
             }
-            return fighters[fighterIndex];
+            return fighters[fighterIndex-1];
         }
     }
 
     class Fighter
     {
-        protected string Name;
+        private string _name;
 
-        protected int Armor;
+        private int _armor;
 
         private string _skill;
 
@@ -95,22 +95,22 @@ namespace qwerty
 
         public Fighter(string name, int health, int armor, int damage, string skill)
         {
-            Name = name;
+            _name = name;
             Health = health;
-            Armor = armor;
+            _armor = armor;
             Damage = damage;
             _skill = skill;
         }
 
         public void TakeDamage(int damage)
         {
-            Health -= (damage - (Armor * damage) / 100);
-            Console.WriteLine($"{Name} получил {damage} урона");
+            Health -= (damage - (_armor * damage) / 100);
+            Console.WriteLine($"{_name} получил {damage} урона");
         }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"{Name}. Количество хп - {Health}. Количество брони - {Armor}. Урон - {Damage}");
+            Console.WriteLine($"{_name}. Количество хп - {Health}. Количество брони - {_armor}. Урон - {Damage}");
         }
 
         public void CastAbility()
@@ -118,7 +118,7 @@ namespace qwerty
             if (_skill == "укрепление")
             {
                 Console.WriteLine("Герой использовал " + _skill);
-                Armor += 5;
+                _armor += 5;
             }
             if (_skill == "супер усиление спэлов")
             {
@@ -136,7 +136,7 @@ namespace qwerty
                 Console.WriteLine("Герой использовал " + _skill);
                 Damage += 5;
                 Health += 5;
-                Armor += 5;
+                _armor += 5;
             }
             if (_skill == "благословение")
             {
