@@ -3,52 +3,81 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
+
+//У вас есть программа, которая помогает пользователю составить план поезда.
+//Есть 4 основных шага в создании плана:
+//-Создать направление - создает направление для поезда(к примеру Бийск - Барнаул)
+//-Продать билеты - вы получаете рандомное кол-во пассажиров, которые купили билеты на это направление
+//-Сформировать поезд - вы создаете поезд и добавляете ему столько вагонов(вагоны могут быть разные по вместительности), сколько хватит для перевозки всех пассажиров.
+//-Отправить поезд - вы отправляете поезд, после чего можете снова создать направление.
+//В верхней части программы должна выводиться полная информация о текущем рейсе или его отсутствии.
+
+
 namespace poezd
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Train train = new Train();
-            Station station = new Station();
-            station.SetDestination(station);
-            station.SellTickets(station);
-            station.CreateWagons(train,station);
-            train.ShowInfo(station);
+            string userInput = default;
+            bool isWorking = true;
+
+            while (isWorking)
+            {
+                Train train = new Train();
+                Station station = new Station();
+                station.MakeRoute();
+                station.SellTickets();
+                train.CreateWagons(station);
+                train.ShowInfo(station);
+
+                Console.WriteLine("Нажмите любую кнопку чтобы сделать следующий поезд или напишите (exit) чтобы выйти");
+                userInput = Console.ReadLine();
+                if (userInput == "exit")
+                {
+                    isWorking = false;
+                }
+                else 
+                {
+                    Console.WriteLine();
+                }
+            }
         }
     }
-        
+
     class Station
     {
-        public string Departure { get; set; }
-        public string Destination { get; set; }
+        private Random _random = new Random();
 
-        public int Wagons { get; set; }
+        public string Departure { get; private set; }
+        public string Destination { get; private set; }
 
-        public int WagonsCapacity { get; set; }
+        public int SoldTickets { get; private set; }
 
-        public int SoldTickets { get; set; }
-
-        Random random = new Random();
-
-        public void SetDestination(Station station)
+        public void MakeRoute()
         {
             Console.WriteLine("Откуда едем");
-            station.Departure = Console.ReadLine();
+            Departure = Console.ReadLine();
 
             Console.WriteLine("Куда едем");
-            station.Destination = Console.ReadLine();
+            Destination = Console.ReadLine();
 
-            Console.WriteLine($"Направление {station.Departure} - {station.Destination} создано");
+            Console.WriteLine($"Направление {Departure} - {Destination} создано");
         }
 
-        public void SellTickets(Station station)
+        public void SellTickets()
         {
-            station.SoldTickets = random.Next(100, 501);
-            Console.WriteLine($"На маршрут {station.Departure} - {station.Destination} было продано {station.SoldTickets} билетов");
+            SoldTickets = _random.Next(100, 501);
+            Console.WriteLine($"На маршрут {Departure} - {Destination} было продано {SoldTickets} билетов");
         }
+    }
 
-        public void CreateWagons(Train train, Station station)
+    class Train
+    {
+        private int _wagons;
+        private int _wagonsCapacity; 
+
+        public void CreateWagons(Station station)
         {
             Console.WriteLine("Какие в поезде будут вагоны: крутые(25 мест в вагоне) или обычные(50 мест в вагоне)");
             string userInput = Console.ReadLine();
@@ -56,34 +85,29 @@ namespace poezd
             switch (userInput)
             {
                 case "крутые":
-                    station.WagonsCapacity = 25;
+                    _wagonsCapacity = 25;
                     break;
                 case "обычные":
-                    station.WagonsCapacity = 50;
+                    _wagonsCapacity = 50;
                     break;
                 default:
                     Console.WriteLine("Таких вагонов у нас нету");
                     break;
             }
 
-            if (station.SoldTickets % station.WagonsCapacity ==0)
+            if (station.SoldTickets % _wagonsCapacity == 0)
             {
-                train.Wagons = station.SoldTickets / station.WagonsCapacity;
+                _wagons = station.SoldTickets / _wagonsCapacity;
             }
             else
             {
-                train.Wagons = (station.SoldTickets / station.WagonsCapacity) + 1;
+                _wagons = (station.SoldTickets / _wagonsCapacity) + 1;
             }
         }
-    }
-
-    class Train
-    {
-        public int Wagons{get; set;}
 
         public void ShowInfo(Station station)
         {
-            Console.WriteLine($"Поезд {station.Departure} - {station.Destination} отправился в путь. В нем было {station.SoldTickets} пасажиров и {Wagons} вагонов(без учета главного вагона)");
+            Console.WriteLine($"Поезд {station.Departure} - {station.Destination} отправился в путь. В нем было {station.SoldTickets} пасажиров и {_wagons} вагонов(без учета главного вагона)");
         }
     }
 }
