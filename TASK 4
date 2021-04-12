@@ -87,11 +87,11 @@ namespace qwerty
 
         protected int Armor;
 
-        public int Health { get; protected set; }
+        public int Health { get; private set; }
 
-        public int Damage { get; protected set; }
+        public int Damage { get; private set; }
 
-        public string Skill { get; protected set; }
+        private string _skill;
 
         public Fighter(string name, int health, int armor, int damage, string skill)
         {
@@ -99,7 +99,7 @@ namespace qwerty
             Health = health;
             Armor = armor;
             Damage = damage;
-            Skill = skill;
+            _skill = skill;
         }
 
         public void TakeDamage(int damage)
@@ -115,30 +115,30 @@ namespace qwerty
 
         public void CastAbility()
         {
-            if (Skill == "укрепление")
+            if (_skill == "укрепление")
             {
-                Console.WriteLine("Герой использовал " + Skill);
+                Console.WriteLine("Герой использовал " + _skill);
                 Armor += 5;
             }
-            if (Skill == "супер усиление спэлов")
+            if (_skill == "супер усиление спэлов")
             {
-                Console.WriteLine("Герой использовал " + Skill);
+                Console.WriteLine("Герой использовал " + _skill);
                 Damage += 10;
             }
-            if (Skill == "перекачка чакры")
+            if (_skill == "перекачка чакры")
             {
-                Console.WriteLine("Герой использовал " + Skill);
+                Console.WriteLine("Герой использовал " + _skill);
                 Damage += 15;
                 Health -= 5;
             }
-            if (Skill == "улучшение")
+            if (_skill == "улучшение")
             {
-                Console.WriteLine("Герой использовал " + Skill);
+                Console.WriteLine("Герой использовал " + _skill);
                 Damage += 5;
                 Health += 5;
                 Armor += 5;
             }
-            if (Skill == "благословение")
+            if (_skill == "благословение")
             {
                 Damage = Health;
             }
