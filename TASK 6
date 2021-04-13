@@ -25,20 +25,28 @@ namespace qwerty
                 Console.Write($"{i + 1} ");
                 fighters[i].ShowInfo();
             }
-
+ 
             Console.WriteLine("Выберите номер своего героя");
             Fighter myFighter = ChooseFighter(fighters, fighterIndex);
             Console.WriteLine("Выберите номер своего противника");
             Fighter opponent = ChooseFighter(fighters, fighterIndex);
 
-            while (myFighter.Health > 0 && opponent.Health > 0)
+            if (myFighter == opponent)
             {
-                myFighter.TakeDamage(opponent.Damage);
-                opponent.TakeDamage(myFighter.Damage);
-                myFighter.CastAbility();
-                opponent.CastAbility();
-                myFighter.ShowInfo();
-                opponent.ShowInfo();
+                Console.WriteLine("Выберите разных персонажей");
+            }
+            else
+            {
+                while (myFighter.Health > 0 && opponent.Health > 0)
+                {
+                    myFighter.TakeDamage(opponent.Damage);
+                    opponent.TakeDamage(myFighter.Damage);
+                    myFighter.UseAbility();
+                    opponent.UseAbility();
+                    myFighter.ShowInfo();
+                    opponent.ShowInfo();
+                    Console.ReadLine();
+                }
 
                 if (myFighter.Health <= 0 && opponent.Health <= 0)
                 {
@@ -48,11 +56,10 @@ namespace qwerty
                 {
                     Console.WriteLine($"Ваш герой проиграл");
                 }
-                else if (opponent.Health <= 0)
+                else
                 {
                     Console.WriteLine($"Ваш герой победил");
                 }
-                Console.ReadLine();
             }
         }
 
@@ -61,7 +68,7 @@ namespace qwerty
             bool isWorking = true;
             while (isWorking)
             {
-                if (!int.TryParse(Console.ReadLine(), out fighterIndex))
+                if (false == int.TryParse(Console.ReadLine(), out fighterIndex))
                 {
                     Console.WriteLine("Это не число");
                 }
@@ -83,90 +90,89 @@ namespace qwerty
 
     class Fighter
     {
-        private string _name;
+        protected string Name;
+        protected int Armor;
+        protected string Skill;
 
-        private int _armor;
-
-        private string _skill;
-
-        public int Health { get; private set; }
-
-        public int Damage { get; private set; }
+        public int Health { get; protected set; }
+        public int Damage { get; protected set; }
 
         public Fighter(string name, int health, int armor, int damage, string skill)
         {
-            _name = name;
+            Name = name;
             Health = health;
-            _armor = armor;
+            Armor = armor;
             Damage = damage;
-            _skill = skill;
+            Skill = skill;
         }
 
         public void TakeDamage(int damage)
         {
-            Health -= (damage - (_armor * damage) / 100);
-            Console.WriteLine($"{_name} получил {damage} урона");
+            Health -= (damage - (Armor * damage) / 100);
+            Console.WriteLine($"{Name} получил {damage} урона");
         }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"{_name}. Количество хп - {Health}. Количество брони - {_armor}. Урон - {Damage}");
+            Console.WriteLine($"{Name}. Количество хп - {Health}. Количество брони - {Armor}. Урон - {Damage}");
         }
 
-        public void CastAbility()
+        public virtual void UseAbility()
         {
-            if (_skill == "укрепление")
-            {
-                Console.WriteLine("Герой использовал " + _skill);
-                _armor += 5;
-            }
-            if (_skill == "супер усиление спэлов")
-            {
-                Console.WriteLine("Герой использовал " + _skill);
-                Damage += 10;
-            }
-            if (_skill == "перекачка чакры")
-            {
-                Console.WriteLine("Герой использовал " + _skill);
-                Damage += 15;
-                Health -= 5;
-            }
-            if (_skill == "улучшение")
-            {
-                Console.WriteLine("Герой использовал " + _skill);
-                Damage += 5;
-                Health += 5;
-                _armor += 5;
-            }
-            if (_skill == "благословение")
-            {
-                Damage = Health;
-            }
+            //Console.WriteLine(Name + " использовал " + Skill);
         }
     }
 
     class Knight : Fighter
     {
         public Knight(int health, int damage) : base("knight", health, 40, damage, "укрепление") { }
+
+        public override void UseAbility()
+        {
+            Console.WriteLine(Name + " использовал " + Skill);
+            Armor += 5;
+        }
     }
 
     class Mage : Fighter
     {
         public Mage(int health, int armor, int damage) : base("Mage", health, armor, damage, "супер усиление спэлов") { }
+        public override void UseAbility()
+        {
+            Console.WriteLine(Name + " использовал " + Skill);
+            Damage += 10;
+        }
     }
 
     class Ninja : Fighter
     {
         public Ninja(int health, int armor, int damage) : base("Ninja", health, armor, damage, "перекачка чакры") { }
+        public override void UseAbility()
+        {
+            Console.WriteLine(Name + " использовал " + Skill);
+            Damage += 10;
+        }
     }
 
     class RoboCop : Fighter
     {
         public RoboCop(int health, int armor, int damage) : base("Robocop", health, armor, damage, "улучшение") { }
+        public override void UseAbility()
+        {
+            Console.WriteLine(Name + " использовал " + Skill);
+            Damage += 5;
+            Health += 5;
+            Armor += 5;
+        }
     }
 
     class Exorcist : Fighter
     {
         public Exorcist(int health, int armor, int damage) : base("Exorcist", health, armor, damage, "благословение") { }
+        public override void UseAbility()
+        {
+            Console.WriteLine(Name + " использовал " + Skill);
+            Damage = Health;
+        }
     }
 }
