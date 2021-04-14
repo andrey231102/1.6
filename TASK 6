@@ -171,6 +171,7 @@ namespace qwerty
         public Exorcist(int health, int armor, int damage) : base("Exorcist", health, armor, damage, "благословение") { }
         public override void UseAbility()
         {
+            UseAbility();
             Damage = Health;
         }
     }
