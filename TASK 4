@@ -3,81 +3,23 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace homework
+namespace Shop
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Market market = new Market();
-
-            market.Work();
-        }
-    }
-
-    class Market
-    {
-        public void Work()
-        {
             Product sausage = new Product(80, "колбаса");
             Product milk = new Product(30, "молоко");
             Product bread = new Product(8, "хлеб");
-
-            List<Product> products = new List<Product> { sausage, milk, bread };
+            List<Product> products = new List<Product> {sausage, milk, bread};
 
             Seller seller = new Seller(products);
 
-            List<Product> _bag = new List<Product>();
-
-            void ShowBag()
-            {
-                if (_bag.Count == 0)
-                {
-                    Console.WriteLine("моя сумка пока-что пустая");
-                }
-                else
-                {
-                    Console.Write("Я взял: ");
-                    foreach (var product in _bag)
-                    {
-                        product.Show();
-                    }
-                }
-            }
-
-            void AddToBag(int userInput)
-            {
-                _bag.Add(products[userInput]);
-            }
-
-            void Buy()
-            {
-                Console.WriteLine("предмет под каким новером вы хотите");
-                int amountOfProducts = seller.CountProducts();
-
-                int userInput;
-                if (!int.TryParse(Console.ReadLine(), out userInput))
-                {
-                    Console.WriteLine("Это не число");
-                }
-                else
-                {
-                    userInput -= 1;
-                    if (userInput >amountOfProducts || userInput < 0)
-                    {
-                        Console.WriteLine("Таких предметов нету в списке");
-                    }
-                    else
-                    {
-                        AddToBag(userInput);
-                    }
-                }
-            }
+            Customer customer = new Customer();
 
             Console.WriteLine("Введите номер команды чтобы что-то произошло: 1 - попросить показать вам товары и их стоимость, 2 - купить товар, 3 - заглянуть в свою сумку, 4 - покинуть магазин");
-
             string userInput = default;
-
             do
             {
                 userInput = Console.ReadLine();
@@ -85,15 +27,15 @@ namespace homework
                 switch (userInput)
                 {
                     case "1":
-                        seller.ShowGoods(products);
+                        seller.ShowGoods();
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "2":
-                        Buy();
+                        customer.Buy(products,seller);
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "3":
-                        ShowBag();
+                        customer.ShowBag();
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "4":
@@ -103,7 +45,53 @@ namespace homework
                         Console.WriteLine("мы не выполянем таких услуг, мб вам надо что-то дургое ?");
                         break;
                 }
-            } while (userInput != "4");
+            } 
+            while (userInput != "4");
+        }
+    }
+
+    class Customer
+    {
+        private List<Product> _bag = new List<Product>();
+
+        public void ShowBag()
+        {
+            if (_bag.Count == 0)
+            {
+                Console.WriteLine("моя сумка пока-что пустая");
+            }
+            else
+            {
+                Console.Write("Я взял: ");
+                for (int i = 0; i < _bag.Count; i++)
+                {
+                    _bag[i].ShowInfo();
+                }
+            }
+        }
+
+        public void Buy(List<Product> products,Seller seller)
+        {
+            Console.WriteLine("предмет под каким новером вы хотите");
+            int amountOfProducts = seller.CountProducts();
+
+            int userInput;
+            if (false == int.TryParse(Console.ReadLine(), out userInput))
+            {
+                Console.WriteLine("Это не число");
+            }
+            else
+            {
+                userInput -= 1;
+                if (userInput > amountOfProducts || userInput < 0)
+                {
+                    Console.WriteLine("Таких предметов нету в списке");
+                }
+                else
+                {
+                    _bag.Add(products[userInput]);
+                }
+            }
         }
     }
 
@@ -111,27 +99,24 @@ namespace homework
     {
         private List<Product> _goods;
 
+        public Seller(List<Product> Goods)
+        {
+            _goods = Goods;
+        }
+
         public int CountProducts()
         {
             int amountOfProducts = _goods.Count;
             return amountOfProducts;
         }
 
-        public Seller(List<Product> goods)
+        public void ShowGoods()
         {
-            _goods = goods;
-        }
-
-        public void ShowGoods(List<Product> products)
-        {
-            int index = 1;
-            Console.WriteLine("Я продаю: ");
-
-            foreach (var product in _goods)
+            Console.WriteLine("Я продаю:");
+            for (int i = 0; i < _goods.Count; i++)
             {
-                Console.Write(index + ".");
-                product.Show();
-                index++;
+                Console.Write($"{i+1}. ");
+                _goods[i].ShowInfo();
             }
         }
     }
@@ -141,15 +126,15 @@ namespace homework
         private int _cost;
         private string _name;
 
-        public Product(int cost, string name)
+        public Product (int Cost, string Name)
         {
-            _cost = cost;
-            _name = name;
+            _cost = Cost;
+            _name = Name;
         }
-
-        public void Show()
+            
+        public void ShowInfo()
         {
-            Console.WriteLine($" {_name} - {_cost} гривен");
+            Console.WriteLine($"{_name} - {_cost}");
         }
     }
 }
