@@ -119,7 +119,7 @@ namespace qwerty
 
         public virtual void UseAbility()
         {
-            //Console.WriteLine(Name + " использовал " + Skill);
+            Console.WriteLine(Name + " использовал " + Skill);
         }
     }
 
@@ -129,7 +129,7 @@ namespace qwerty
 
         public override void UseAbility()
         {
-            Console.WriteLine(Name + " использовал " + Skill);
+            base.UseAbility();
             Armor += 5;
         }
     }
@@ -139,7 +139,7 @@ namespace qwerty
         public Mage(int health, int armor, int damage) : base("Mage", health, armor, damage, "супер усиление спэлов") { }
         public override void UseAbility()
         {
-            Console.WriteLine(Name + " использовал " + Skill);
+            UseAbility();
             Damage += 10;
         }
     }
@@ -149,7 +149,7 @@ namespace qwerty
         public Ninja(int health, int armor, int damage) : base("Ninja", health, armor, damage, "перекачка чакры") { }
         public override void UseAbility()
         {
-            Console.WriteLine(Name + " использовал " + Skill);
+            UseAbility();
             Damage += 10;
         }
     }
@@ -159,7 +159,7 @@ namespace qwerty
         public RoboCop(int health, int armor, int damage) : base("Robocop", health, armor, damage, "улучшение") { }
         public override void UseAbility()
         {
-            Console.WriteLine(Name + " использовал " + Skill);
+            UseAbility();
             Damage += 5;
             Health += 5;
             Armor += 5;
@@ -171,7 +171,6 @@ namespace qwerty
         public Exorcist(int health, int armor, int damage) : base("Exorcist", health, armor, damage, "благословение") { }
         public override void UseAbility()
         {
-            Console.WriteLine(Name + " использовал " + Skill);
             Damage = Health;
         }
     }
