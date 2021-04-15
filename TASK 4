@@ -31,7 +31,7 @@ namespace Shop
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "2":
-                        customer.Buy(products,seller);
+                        customer.Buy(seller);
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "3":
@@ -70,26 +70,32 @@ namespace Shop
             }
         }
 
-        public void Buy(List<Product> products,Seller seller)
+        public void Buy(Seller seller)
         {
-            Console.WriteLine("предмет под каким новером вы хотите");
-            int amountOfProducts = seller.CountProducts();
-
             int userInput;
-            if (false == int.TryParse(Console.ReadLine(), out userInput))
+            if (seller.CountProducts() == 0)
             {
-                Console.WriteLine("Это не число");
+                Console.WriteLine("Вы забрали весь товар");
             }
             else
             {
-                userInput -= 1;
-                if (userInput > amountOfProducts || userInput < 0)
+                Console.WriteLine("предмет под каким новером вы хотите");
+                if (false == int.TryParse(Console.ReadLine(), out userInput))
                 {
-                    Console.WriteLine("Таких предметов нету в списке");
+                    Console.WriteLine("Это не число");
                 }
                 else
                 {
-                    _bag.Add(products[userInput]);
+                    if (userInput > seller.Goods.Count || userInput < 0)
+                    {
+                        Console.WriteLine("Таких предметов нету");
+                    }
+                    else
+                    {
+                        userInput -= 1;
+                        _bag.Add(seller.Goods[userInput]);
+                        seller.Sell(userInput);
+                    }
                 }
             }
         }
@@ -97,27 +103,39 @@ namespace Shop
 
     class Seller
     {
-        private List<Product> _goods;
+        public List<Product> Goods { get; private set; }
 
-        public Seller(List<Product> Goods)
+        public Seller(List<Product> goods)
         {
-            _goods = Goods;
+            Goods = goods;
         }
 
         public int CountProducts()
         {
-            int amountOfProducts = _goods.Count;
+            int amountOfProducts = Goods.Count;
             return amountOfProducts;
         }
 
         public void ShowGoods()
         {
-            Console.WriteLine("Я продаю:");
-            for (int i = 0; i < _goods.Count; i++)
+            if (Goods.Count == 0)
             {
-                Console.Write($"{i+1}. ");
-                _goods[i].ShowInfo();
+                Console.WriteLine("Товаров больше нету");
             }
+            else
+            {
+                Console.WriteLine("Я продаю:");
+                for (int i = 0; i < Goods.Count; i++)
+                {
+                    Console.Write($"{i + 1}. ");
+                    Goods[i].ShowInfo();
+                }
+            }
+        }
+
+        public void Sell(int userInput)
+        {
+                Goods.RemoveAt(userInput);
         }
     }
 
