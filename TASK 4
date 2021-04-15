@@ -152,7 +152,7 @@ namespace Shop
             
         public void ShowInfo()
         {
-            Console.WriteLine($"{_name} - {_cost}");
+            Console.WriteLine($"{_name} - {_cost} денег");
         }
     }
 }
