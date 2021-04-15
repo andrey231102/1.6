@@ -135,7 +135,7 @@ namespace Shop
 
         public void Sell(int userInput)
         {
-                Goods.RemoveAt(userInput);
+            Goods.RemoveAt(userInput);
         }
     }
 
