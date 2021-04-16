@@ -93,7 +93,8 @@ namespace Shop
                     else
                     {
                         userInput -= 1;
-                        seller.Sell(_bag, userInput);
+                        _bag.Add(seller.CheckOut(userInput));
+                        seller.Sell(userInput);
                     }
                 }
             }
@@ -132,9 +133,13 @@ namespace Shop
             }
         }
 
-        public void Sell(List<Product> bag, int userInput)
+        public Product CheckOut(int userInput)
         {
-            bag.Add(_goods[userInput]);
+            return _goods[userInput];
+        }
+
+        public void Sell(int userInput)
+        {
             _goods.RemoveAt(userInput);
         }
     }
