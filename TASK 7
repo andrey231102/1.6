@@ -3,37 +3,32 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-//Написать программу администрирования супермаркетом.
-//В супермаркете есть очередь клиентов.
-//У каждого клиента в корзине есть товары, также у клиентов есть деньги.
-//Клиент, когда подходит на кассу, получает итоговую сумму покупки и старается её оплатить.
-//Если оплатить клиент не может, то он рандомный товар из корзины выкидывает до тех пор, пока его денег не хватит для оплаты.
-//Клиентов можно делать ограниченное число на старте программы.
-
 namespace SuperMarket
 {
     class Program
     {
         static void Main(string[] args)
         {
+            Market market = new Market();
+            market.CreateCustomers(20);
+            market.Work();
         }
     }
 
     class Market
     {
-        Product sausage = new Product(80, "колбаса");
+        private Queue<Customer> _customers = new Queue<Customer>();
+        private Random _random = new Random();
+
+        Product sausage = new Product(150, "колбаса");
         Product milk = new Product(30, "молоко");
         Product bread = new Product(8, "хлеб");
-        Product carrot = new Product(80, "морковь");
+        Product carrot = new Product(45, "морковь");
         Product potato = new Product(30, "картошка");
-        Product water = new Product(8, "вода");
-        Product rice = new Product(80, "рис");
-        Product gum = new Product(30, "жвачка");
-        Product snickers = new Product(8, "сникерс");
-
-        private Queue<Customer> _customers = new Queue<Customer>();
-
-        
+        Product water = new Product(14, "вода");
+        Product rice = new Product(44, "рис");
+        Product gum = new Product(13, "жвачка");
+        Product snickers = new Product(14, "сникерс");
 
         public Product ChooseProduct(int choice)
         {
@@ -48,50 +43,102 @@ namespace SuperMarket
             return amountOfProducts;
         }
 
-        public void CreateNewCustomer(int count)
-        {   
-            Random random = new Random();
-
-            for (int i = 0; i < count; i++)
+        public void CreateCustomers(int amountOfCustomers)
+        {
+            for (int i = 0; i < amountOfCustomers; i++)
             {
-                Customer customer = new Customer(random.Next(500, 1001));
-                customer.FillBag();
+                Customer customer = new Customer(_random.Next(500, 701));
+                customer.TakeGoods(this);
                 _customers.Enqueue(customer);
             }
+        }
+
+        public void Work()
+        {
+            int income = 0;
+            while (_customers.Count > 0)
+            {
+                Console.WriteLine($"Вы заработали {income}");
+                Customer customer = _customers.Dequeue();
+                Console.WriteLine($"У этого человека {customer.Money} гривен, он хочет купить: ");
+                customer.ShowBag();
+                income += customer.WasteMoney();
+                Console.WriteLine("Нажмите любую кнопку чтобы перейти к следующему покупателю");
+                Console.ReadLine();
+            }
+            Console.WriteLine($"Рабочий день все, вы заработали за день {income} денег");
         }
     }
 
     class Customer
     {
-        private List<Product> _bag ;
-        private int _money;
-        Random random = new Random();
+        private List<Product> _bag;
+        private int _sum = 0;
+        private Random _random = new Random();
 
+        public int Money { get; private set; }
 
         public Customer(int money)
         {
-            _money = money;
+            Money = money;
         }
 
-        public void FillBag(Market market)
+        public void TakeGoods(Market market)
         {
-            _bag = new List<Product>(random.Next(5, 11));
+            _bag = new List<Product>(_random.Next(5, 16));
+
+            for (int i = 0; i < _bag.Capacity; i++)
+            {
+                _bag.Add(market.ChooseProduct(_random.Next(0, (market.CalculateProducts()))));
+            }
+        }
+
+        public void ShowBag()
+        {
             for (int i = 0; i < _bag.Count; i++)
             {
-                _bag[i] = market.ChooseProduct(random.Next(0,market.CalculateProducts() - 1));
+                _bag[i].ShowInfo();
+                _sum += _bag[i].Cost;
             }
+            Console.WriteLine($"Необходимая сумма для покупки: {_sum} денег");
+        }
+
+        public int WasteMoney()
+        {
+            while (Money < _sum)
+            {
+                if (_bag.Count == 0 )
+                {
+                    Console.WriteLine("Покупатель ушел, у него нету денег и товаров");
+                    return 0;
+                }
+                else
+                {
+                    int index = _random.Next(0, _bag.Count);
+                    _sum -= _bag[index].Cost;
+                    Console.WriteLine($"Покупатель выбросил - {_bag[index].Name}, новая цена его товаров - {_sum}");
+                    _bag.RemoveAt(index);
+                }
+            }
+            Console.WriteLine($"Покупка прошла успешно, у покупателя осталось {Money-=_sum} денег");
+            return _sum;
         }
     }
 
     class Product
     {
-        private int _cost;
-        private string _name;
+        public int Cost { get; private set;}
+        public string Name { get; private set;}
 
-        public Product(int Cost, string Name)
+        public Product(int cost, string name)
         {
-            _cost = Cost;
-            _name = Name;
+            Cost = cost;
+            Name = name;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"{Name} - {Cost} денег");
         }
     }
 }
