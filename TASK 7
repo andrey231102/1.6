@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+//Написать программу администрирования супермаркетом.
+//В супермаркете есть очередь клиентов.
+//У каждого клиента в корзине есть товары, также у клиентов есть деньги.
+//Клиент, когда подходит на кассу, получает итоговую сумму покупки и старается её оплатить.
+//Если оплатить клиент не может, то он рандомный товар из корзины выкидывает до тех пор, пока его денег не хватит для оплаты.
+//Клиентов можно делать ограниченное число на старте программы.
+
+namespace SuperMarket
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+        }
+    }
+
+    class Market
+    {
+        Product sausage = new Product(80, "колбаса");
+        Product milk = new Product(30, "молоко");
+        Product bread = new Product(8, "хлеб");
+        Product carrot = new Product(80, "морковь");
+        Product potato = new Product(30, "картошка");
+        Product water = new Product(8, "вода");
+        Product rice = new Product(80, "рис");
+        Product gum = new Product(30, "жвачка");
+        Product snickers = new Product(8, "сникерс");
+
+        private Queue<Customer> _customers = new Queue<Customer>();
+
+        
+
+        public Product ChooseProduct(int choice)
+        {
+            List<Product> _products = new List<Product> { sausage, milk, bread, carrot, potato, water, rice, gum, snickers };
+            return _products[choice];
+        }
+
+        public int CalculateProducts()
+        {
+            List<Product> _products = new List<Product> { sausage, milk, bread, carrot, potato, water, rice, gum, snickers };
+            int amountOfProducts = _products.Count;
+            return amountOfProducts;
+        }
+
+        public void CreateNewCustomer(int count)
+        {   
+            Random random = new Random();
+
+            for (int i = 0; i < count; i++)
+            {
+                Customer customer = new Customer(random.Next(500, 1001));
+                customer.FillBag();
+                _customers.Enqueue(customer);
+            }
+        }
+    }
+
+    class Customer
+    {
+        private List<Product> _bag ;
+        private int _money;
+        Random random = new Random();
+
+
+        public Customer(int money)
+        {
+            _money = money;
+        }
+
+        public void FillBag(Market market)
+        {
+            _bag = new List<Product>(random.Next(5, 11));
+            for (int i = 0; i < _bag.Count; i++)
+            {
+                _bag[i] = market.ChooseProduct(random.Next(0,market.CalculateProducts() - 1));
+            }
+        }
+    }
+
+    class Product
+    {
+        private int _cost;
+        private string _name;
+
+        public Product(int Cost, string Name)
+        {
+            _cost = Cost;
+            _name = Name;
+        }
+    }
+}
