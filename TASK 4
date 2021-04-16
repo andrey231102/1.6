@@ -86,15 +86,14 @@ namespace Shop
                 }
                 else
                 {
-                    if (userInput > seller.Goods.Count || userInput < 0)
+                    if (userInput > seller.CountProducts() || userInput < 0)
                     {
                         Console.WriteLine("Таких предметов нету");
                     }
                     else
                     {
                         userInput -= 1;
-                        _bag.Add(seller.Goods[userInput]);
-                        seller.Sell(userInput);
+                        seller.Sell(_bag, userInput);
                     }
                 }
             }
@@ -103,39 +102,40 @@ namespace Shop
 
     class Seller
     {
-        public List<Product> Goods { get; private set; }
+        private List<Product> _goods;
 
         public Seller(List<Product> goods)
         {
-            Goods = goods;
+            _goods = goods;
         }
 
         public int CountProducts()
         {
-            int amountOfProducts = Goods.Count;
+            int amountOfProducts = _goods.Count;
             return amountOfProducts;
         }
 
         public void ShowGoods()
         {
-            if (Goods.Count == 0)
+            if (_goods.Count == 0)
             {
                 Console.WriteLine("Товаров больше нету");
             }
             else
             {
                 Console.WriteLine("Я продаю:");
-                for (int i = 0; i < Goods.Count; i++)
+                for (int i = 0; i < _goods.Count; i++)
                 {
                     Console.Write($"{i + 1}. ");
-                    Goods[i].ShowInfo();
+                    _goods[i].ShowInfo();
                 }
             }
         }
 
-        public void Sell(int userInput)
+        public void Sell(List<Product> bag, int userInput)
         {
-            Goods.RemoveAt(userInput);
+            bag.Add(_goods[userInput]);
+            _goods.RemoveAt(userInput);
         }
     }
 
