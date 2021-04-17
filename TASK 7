@@ -22,22 +22,25 @@ namespace SuperMarket
     {
         private Queue<Customer> _customers = new Queue<Customer>();
         private Random _random = new Random();
-        private Product _sausage = new Product(150, "колбаса");
-        private Product _milk = new Product(30, "молоко");
-        private Product _bread = new Product(8, "хлеб");
-        private Product _carrot = new Product(45, "морковь");
-        private Product _potato = new Product(30, "картошка");
-        private Product _water = new Product(14, "вода");
-        private Product _rice = new Product(44, "рис");
-        private Product _gum = new Product(13, "жвачка");
-        private Product _snickers = new Product(14, "сникерс");
+        private List<Product> _products = new List<Product>
+        {
+            new Product(150, "колбаса"),
+            new Product(30, "молоко"),
+            new Product(8, "хлеб"),
+            new Product(45, "морковь"),
+            new Product(30, "картошка"),
+            new Product(14, "вода"),
+            new Product(44, "рис"),
+            new Product(13, "жвачка"),
+            new Product(14, "сникерс")
+        };
 
         public void CreateCustomers(int amountOfCustomers)
         {
             for (int i = 0; i < amountOfCustomers; i++)
             {
                 Customer customer = new Customer(_random.Next(500, 701));
-                customer.TakeGoods(new List<Product> { _sausage, _milk, _bread, _carrot, _potato, _water, _rice, _gum, _snickers });
+                customer.TakeGoods(_products);
                 _customers.Enqueue(customer);
             }
         }
