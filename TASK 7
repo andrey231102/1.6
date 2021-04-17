@@ -9,7 +9,10 @@ namespace SuperMarket
     {
         static void Main(string[] args)
         {
+            Queue<Customer> _customers = new Queue<Customer>();
+            Random _random = new Random();
             Market market = new Market();
+
             market.CreateCustomers(20);
             market.Work();
         }
@@ -19,36 +22,22 @@ namespace SuperMarket
     {
         private Queue<Customer> _customers = new Queue<Customer>();
         private Random _random = new Random();
-
-        Product sausage = new Product(150, "колбаса");
-        Product milk = new Product(30, "молоко");
-        Product bread = new Product(8, "хлеб");
-        Product carrot = new Product(45, "морковь");
-        Product potato = new Product(30, "картошка");
-        Product water = new Product(14, "вода");
-        Product rice = new Product(44, "рис");
-        Product gum = new Product(13, "жвачка");
-        Product snickers = new Product(14, "сникерс");
-
-        public Product ChooseProduct(int choice)
-        {
-            List<Product> _products = new List<Product> { sausage, milk, bread, carrot, potato, water, rice, gum, snickers };
-            return _products[choice];
-        }
-
-        public int CalculateProducts()
-        {
-            List<Product> _products = new List<Product> { sausage, milk, bread, carrot, potato, water, rice, gum, snickers };
-            int amountOfProducts = _products.Count;
-            return amountOfProducts;
-        }
+        private Product _sausage = new Product(150, "колбаса");
+        private Product _milk = new Product(30, "молоко");
+        private Product _bread = new Product(8, "хлеб");
+        private Product _carrot = new Product(45, "морковь");
+        private Product _potato = new Product(30, "картошка");
+        private Product _water = new Product(14, "вода");
+        private Product _rice = new Product(44, "рис");
+        private Product _gum = new Product(13, "жвачка");
+        private Product _snickers = new Product(14, "сникерс");
 
         public void CreateCustomers(int amountOfCustomers)
         {
             for (int i = 0; i < amountOfCustomers; i++)
             {
                 Customer customer = new Customer(_random.Next(500, 701));
-                customer.TakeGoods(this);
+                customer.TakeGoods(new List<Product> { _sausage, _milk, _bread, _carrot, _potato, _water, _rice, _gum, _snickers });
                 _customers.Enqueue(customer);
             }
         }
@@ -73,7 +62,7 @@ namespace SuperMarket
     class Customer
     {
         private List<Product> _bag;
-        private int _sum = 0;
+        private int _sum;
         private Random _random = new Random();
 
         public int Money { get; private set; }
@@ -83,13 +72,15 @@ namespace SuperMarket
             Money = money;
         }
 
-        public void TakeGoods(Market market)
+        public void TakeGoods(List<Product> products)
         {
-            _bag = new List<Product>(_random.Next(5, 16));
+            int amountOfProducts = products.Count;
+            int bagCapacity = _random.Next(5, 16);
+            _bag = new List<Product>(bagCapacity);
 
             for (int i = 0; i < _bag.Capacity; i++)
             {
-                _bag.Add(market.ChooseProduct(_random.Next(0, (market.CalculateProducts()))));
+                _bag.Add(products[_random.Next(0,amountOfProducts)]);
             }
         }
 
