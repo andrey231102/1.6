@@ -69,9 +69,7 @@ namespace War
             }
         }
     }
-
-
-
+    
     class Squad
     {
         private StormTrooper _stormTrooper = new StormTrooper();
