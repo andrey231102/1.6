@@ -14,12 +14,10 @@ namespace War
             
             firstSquad.CreateSquad(5);
             Console.WriteLine();
-
             secondSquad.CreateSquad(5);
             Console.WriteLine();
 
             Fight(firstSquad, secondSquad);
-
             AnnounceWinner(firstSquad, secondSquad);
         }
 
