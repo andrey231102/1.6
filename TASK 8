@@ -1,0 +1,173 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace War
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Squad firstSquad = new Squad();
+            Squad secondSquad = new Squad();
+            
+            firstSquad.CreateSquad(5);
+            Console.WriteLine();
+
+            secondSquad.CreateSquad(5);
+            Console.WriteLine();
+
+            Fight(firstSquad, secondSquad);
+
+            AnnounceWinner(firstSquad, secondSquad);
+        }
+
+        static void Fight(Squad firstSquad, Squad secondSquad)
+        {
+            Random random = new Random();
+
+            while (firstSquad.Soldiers.Count > 0 && secondSquad.Soldiers.Count > 0)
+            {
+                Console.WriteLine("Атакует 1 отряд");
+                AttackSquad(firstSquad, secondSquad, random);
+                Console.WriteLine("Атакует 2 отряд");
+                AttackSquad(secondSquad, firstSquad, random);
+
+                Console.WriteLine("нажмите любую кнопку чтобы продолжить");
+                Console.ReadLine();
+            }
+        }
+
+        static void AttackSquad(Squad attackerSquad, Squad defenderSquad, Random random)
+        {
+            int defenderSoldier = random.Next(0, defenderSquad.Soldiers.Count);
+            int attackerSoldier = random.Next(0, attackerSquad.Soldiers.Count);
+
+            defenderSquad.Soldiers[defenderSoldier].TakeDamage(attackerSquad.Soldiers[attackerSoldier].Damage);
+            Console.WriteLine($"{defenderSquad.Soldiers[defenderSoldier].Name} получил {attackerSquad.Soldiers[attackerSoldier].Damage} урона от {attackerSquad.Soldiers[attackerSoldier].Name}");
+            defenderSquad.Soldiers[defenderSoldier].ShowInfo();
+            if (defenderSquad.Soldiers[defenderSoldier].Health <= 0)
+            {
+                Console.WriteLine($"{defenderSquad.Soldiers[defenderSoldier].Name} 2 отряда умер");
+                defenderSquad.Soldiers.RemoveAt(defenderSoldier);
+            }
+            Console.WriteLine();
+        }
+
+        static void AnnounceWinner(Squad firstSquad, Squad secondSquad)
+        {
+            if (firstSquad.Soldiers.Count > 0 && secondSquad.Soldiers.Count > 0)
+            {
+                Console.WriteLine("ничья");
+            }
+            else if (firstSquad.Soldiers.Count > 0)
+            {
+                Console.WriteLine($"первый отряд победил, в нем осталось {firstSquad.Soldiers.Count} cолдат");
+            }
+            else
+            {
+                Console.WriteLine($"второй отряд победил, в нем осталось {secondSquad.Soldiers.Count} солдат");
+            }
+        }
+    }
+
+
+
+    class Squad
+    {
+        private StormTrooper _stormTrooper = new StormTrooper();
+        private HeavyTrooper _heavyTrooper = new HeavyTrooper();
+        private Sniper _sniper = new Sniper();
+        private List<Soldier> _soldiers = new List<Soldier>();
+
+        public List<Soldier> Soldiers
+        {
+            get
+            {
+                return _soldiers;
+            }
+        }
+
+        public void CreateSquad(int amountOfSoldiers)
+        {
+            Console.WriteLine("Заполните отряд какими-то солдатами: 1 - штурмовик, 2 - тяжелый штурмовик, 3 - снайпер");
+            int userInput;
+            
+            while (Soldiers.Count < amountOfSoldiers)
+            {
+                if (false == int.TryParse(Console.ReadLine(), out userInput))
+                {
+                    Console.WriteLine("Это не число");
+                }
+                else
+                {
+                    if (userInput == 1)
+                    {
+                        Soldiers.Add(_stormTrooper);
+                    }
+                    else if (userInput == 2)
+                    {
+                        Soldiers.Add(_heavyTrooper);
+                    }
+                    else if (userInput == 3)
+                    {
+                        Soldiers.Add(_sniper);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Таких войск нету");
+                    }
+                }
+            }
+
+            Console.WriteLine("Oтряд готов:");
+            foreach (var soldier in Soldiers)
+            {
+                soldier.ShowInfo();
+            }
+        }
+    }
+
+    class Soldier
+    {
+        protected int Armor;
+
+        public int Health { get; private set; }
+        public string Name { get; private set; }
+        public int Damage { get; private set; }
+
+        public Soldier(string name, int health, int armor, int damage)
+        {
+            Name = name;
+            Health = health;
+            Armor = armor;
+            Damage = damage;
+        }
+
+        public void TakeDamage(int damage)
+        {
+            Health -= (damage - (Armor * damage) / 100);
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"{Name}. Количество хп - {Health}. Количество брони - {Armor}. Урон - {Damage}");
+        }
+    }
+
+    class StormTrooper : Soldier
+    {
+        public StormTrooper() : base("Штурмовик", 200, 30, 75) { }
+    }
+
+    class HeavyTrooper : Soldier
+    {
+        public HeavyTrooper() : base("Тяжелый штурмовик", 400, 60, 50) { }
+    }
+
+    class Sniper : Soldier
+    {
+        public Sniper() : base("Снайпер", 150, 15, 200) { }
+    }
+}
