@@ -11,7 +11,6 @@ namespace SuperMarket
         {
             Queue<Customer> _customers = new Queue<Customer>();
             Market market = new Market();
-
             market.CreateCustomers(20);
             market.Work();
         }
