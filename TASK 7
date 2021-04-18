@@ -10,7 +10,6 @@ namespace SuperMarket
         static void Main(string[] args)
         {
             Queue<Customer> _customers = new Queue<Customer>();
-            Random _random = new Random();
             Market market = new Market();
 
             market.CreateCustomers(20);
@@ -66,7 +65,7 @@ namespace SuperMarket
     {
         private List<Product> _bag;
         private int _sum;
-        private Random _random = new Random();
+        static private Random _random = new Random();
 
         public int Money { get; private set; }
 
