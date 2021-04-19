@@ -1,1 +1,119 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
+namespace Aquarium
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Aquarium aquarium = new Aquarium();
+            aquarium.ControlPopulation();
+        }
+    }
+
+    class Aquarium
+    {
+        private Random _random = new Random();
+        private List<Fish> _fishes = new List<Fish>();
+        private int _deadFishes = 0;
+        private int _aliveFishes = 0;
+        private int _addedFishes = 0;
+
+        public void ControlPopulation()
+        {
+            Console.WriteLine("Выберите команду: 1 - добавить рыбку, 2 - удалить рыбку, 3 - покинуть программу");
+            string userInput = default;
+            while (userInput != "3")
+            {
+                userInput = Console.ReadLine();
+                switch (userInput)
+                {
+                    case "1":
+                        if (_fishes.Count == 20)
+                        {
+                            Console.WriteLine("В аквариум больше не влезет рыбок, ждите пока кто-то умрет отстарости либо позаботьтесь об этом самостоятельно");
+                        }
+                        else
+                        {
+                            _fishes.Add(new Fish(_random.Next(5, 13)));
+                            Console.WriteLine("Вы добавили рыбку");
+                            _addedFishes++;
+                        }
+                        Console.WriteLine("Выберите следующую команду");
+                        break;
+                    case "2":
+                        Console.WriteLine("Рыбку под каким номером вы хотите удалить");
+                        int fishIndex = default;
+                        if (false == int.TryParse(Console.ReadLine(), out fishIndex))
+                        {
+                            Console.WriteLine("Это не номер");
+                        }
+                        else
+                        {
+                            if (fishIndex > _fishes.Count || fishIndex <= 0)
+                            {
+                                Console.WriteLine("такой рыбки нету");
+                            }
+                            else
+                            {
+                                Console.WriteLine("рыбка успешно покинула аквариум");
+                                _fishes.RemoveAt(fishIndex - 1);
+                                _deadFishes++;
+                            }
+                        }
+                        Console.WriteLine("Выберите следующую команду");
+                        break;
+                    case "3":
+                        Console.WriteLine("Вы покинули программу со следующими показателями: ");
+                        break;
+                    default:
+                        Console.WriteLine("Такого аквариум сделать не может");
+                        break;
+                }
+
+                Console.WriteLine("Рыбки постарели и потеряли 1 хп");
+                for (int i = 0; i < _fishes.Count; i++)
+                {
+                    _fishes[i].GettingOld();
+                    Console.Write($"{i+1} рыбка - ");
+                    _fishes[i].ShowInfo();
+                    if (_fishes[i].Health == 0)
+                    {
+                        Console.WriteLine($"рыбка под номеров {i + 1} умерла от старости");
+                        _fishes.RemoveAt(i);
+                    }
+                }
+            }
+            ShowScore();
+        }
+
+        public void ShowScore()
+        {
+            _aliveFishes = _fishes.Count;
+            Console.WriteLine($"В аквариуме осталось {_aliveFishes} рыбок, погибло {_deadFishes} рыбок, было добавлено за все время {_addedFishes} рыбок");
+        }
+    }
+
+    class Fish
+    {
+        public int Health { get; private set; }
+
+        public Fish(int health)
+        {
+            Health = health;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine(Health + " хп");
+        }
+
+        public void GettingOld()
+        {
+            Health--;
+        }
+    }
+}
