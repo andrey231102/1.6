@@ -68,9 +68,6 @@ namespace War
 
     class Squad
     {
-        //private StormTrooper _stormTrooper  = new StormTrooper();
-        //private HeavyTrooper _heavyTrooper = new HeavyTrooper();
-        //private Sniper _sniper = new Sniper();
         private List<Soldier> _soldiers = new List<Soldier>();
 
         public void Create(int amountOfSoldiers)
