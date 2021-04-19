@@ -34,6 +34,9 @@ namespace War
                 {
                     Console.WriteLine("Атакует 1 отряд");
                     firstSquad.AttackEnemy(firstSquad, secondSquad, random);
+                }
+                if (firstSquad.CountSoldiers(firstSquad) > 0 && secondSquad.CountSoldiers(secondSquad) > 0)
+                {
                     Console.WriteLine("Атакует 2 отряд");
                     secondSquad.AttackEnemy(secondSquad, firstSquad, random);
                     Console.WriteLine("нажмите любую кнопку чтобы продолжить");
