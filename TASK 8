@@ -11,7 +11,7 @@ namespace War
         {
             Squad firstSquad = new Squad();
             Squad secondSquad = new Squad();
-            
+
             firstSquad.Create(5);
             Console.WriteLine();
 
@@ -26,48 +26,39 @@ namespace War
         static void Fight(Squad firstSquad, Squad secondSquad)
         {
             Random random = new Random();
+            bool bothSquadAlive = true;
 
-            while (firstSquad.Soldiers.Count > 0 && secondSquad.Soldiers.Count > 0)
+            while (bothSquadAlive)
             {
-                Console.WriteLine("Атакует 1 отряд");
-                AttackSquad(firstSquad, secondSquad, random);
-                Console.WriteLine("Атакует 2 отряд");
-                AttackSquad(secondSquad, firstSquad, random);
-
-                Console.WriteLine("нажмите любую кнопку чтобы продолжить");
-                Console.ReadLine();
+                if (firstSquad.CountSoldiers(firstSquad) > 0 && secondSquad.CountSoldiers(secondSquad) > 0)
+                {
+                    Console.WriteLine("Атакует 1 отряд");
+                    firstSquad.AttackEnemy(firstSquad, secondSquad, random);
+                    Console.WriteLine("Атакует 2 отряд");
+                    secondSquad.AttackEnemy(secondSquad, firstSquad, random);
+                    Console.WriteLine("нажмите любую кнопку чтобы продолжить");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    bothSquadAlive = false;
+                }
             }
-        }
-
-        static void AttackSquad(Squad attackerSquad, Squad defenderSquad, Random random)
-        {
-            int defenderSoldier = random.Next(0, defenderSquad.Soldiers.Count);
-            int attackerSoldier = random.Next(0, attackerSquad.Soldiers.Count);
-
-            defenderSquad.Soldiers[defenderSoldier].TakeDamage(attackerSquad.Soldiers[attackerSoldier].Damage);
-            Console.WriteLine($"{defenderSquad.Soldiers[defenderSoldier].Name} получил {attackerSquad.Soldiers[attackerSoldier].Damage} урона от {attackerSquad.Soldiers[attackerSoldier].Name}");
-            defenderSquad.Soldiers[defenderSoldier].ShowInfo();
-            if (defenderSquad.Soldiers[defenderSoldier].Health <= 0)
-            {
-                Console.WriteLine($"{defenderSquad.Soldiers[defenderSoldier].Name} 2 отряда умер");
-                defenderSquad.Soldiers.RemoveAt(defenderSoldier);
-            }
-            Console.WriteLine();
         }
 
         static void AnnounceWinner(Squad firstSquad, Squad secondSquad)
         {
-            if (firstSquad.Soldiers.Count > 0 && secondSquad.Soldiers.Count > 0)
+            if (firstSquad.CountSoldiers(firstSquad) > 0 && secondSquad.CountSoldiers(secondSquad) > 0)
             {
                 Console.WriteLine("ничья");
             }
-            else if (firstSquad.Soldiers.Count > 0)
+            else if (firstSquad.CountSoldiers(firstSquad) > 0)
             {
-                Console.WriteLine($"первый отряд победил, в нем осталось {firstSquad.Soldiers.Count} cолдат");
+                Console.WriteLine($"первый отряд победил, в нем осталось {firstSquad.CountSoldiers(firstSquad)} cолдат");
             }
             else
             {
-                Console.WriteLine($"второй отряд победил, в нем осталось {secondSquad.Soldiers.Count} солдат");
+                Console.WriteLine($"второй отряд победил, в нем осталось {secondSquad.CountSoldiers(secondSquad)} солдат");
             }
         }
     }
@@ -79,20 +70,12 @@ namespace War
         private Sniper _sniper = new Sniper();
         private List<Soldier> _soldiers = new List<Soldier>();
 
-        public List<Soldier> Soldiers
-        {
-            get
-            {
-                return _soldiers;
-            }
-        }
-
         public void Create(int amountOfSoldiers)
         {
             Console.WriteLine("Заполните отряд какими-то солдатами: 1 - штурмовик, 2 - тяжелый штурмовик, 3 - снайпер");
             int userInput;
-            
-            while (Soldiers.Count < amountOfSoldiers)
+
+            while (_soldiers.Count < amountOfSoldiers)
             {
                 if (false == int.TryParse(Console.ReadLine(), out userInput))
                 {
@@ -102,15 +85,15 @@ namespace War
                 {
                     if (userInput == 1)
                     {
-                        Soldiers.Add(_stormTrooper);
+                        _soldiers.Add(_stormTrooper);
                     }
                     else if (userInput == 2)
                     {
-                        Soldiers.Add(_heavyTrooper);
+                        _soldiers.Add(_heavyTrooper);
                     }
                     else if (userInput == 3)
                     {
-                        Soldiers.Add(_sniper);
+                        _soldiers.Add(_sniper);
                     }
                     else
                     {
@@ -120,10 +103,31 @@ namespace War
             }
 
             Console.WriteLine("Oтряд готов:");
-            foreach (var soldier in Soldiers)
+            foreach (var soldier in _soldiers)
             {
                 soldier.ShowInfo();
             }
+        }
+
+        public int CountSoldiers(Squad squad)
+        {
+            return squad._soldiers.Count;
+        }
+
+        public void AttackEnemy(Squad attackerSquad, Squad defenderSquad, Random random)
+        {
+            int defenderSoldier = random.Next(0, defenderSquad._soldiers.Count);
+            int attackerSoldier = random.Next(0, attackerSquad._soldiers.Count);
+
+            defenderSquad._soldiers[defenderSoldier].TakeDamage(attackerSquad._soldiers[attackerSoldier].Damage);
+            Console.WriteLine($"{defenderSquad._soldiers[defenderSoldier].Name} получил {attackerSquad._soldiers[attackerSoldier].Damage} урона от {attackerSquad._soldiers[attackerSoldier].Name}");
+            defenderSquad._soldiers[defenderSoldier].ShowInfo();
+            if (defenderSquad._soldiers[defenderSoldier].Health <= 0)
+            {
+                Console.WriteLine($"{defenderSquad._soldiers[defenderSoldier].Name} вражеского отряда умер");
+                defenderSquad._soldiers.RemoveAt(defenderSoldier);
+            }
+            Console.WriteLine();
         }
     }
 
