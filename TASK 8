@@ -12,12 +12,14 @@ namespace War
             Squad firstSquad = new Squad();
             Squad secondSquad = new Squad();
             
-            firstSquad.CreateSquad(5);
+            firstSquad.Create(5);
             Console.WriteLine();
-            secondSquad.CreateSquad(5);
+
+            secondSquad.Create(5);
             Console.WriteLine();
 
             Fight(firstSquad, secondSquad);
+
             AnnounceWinner(firstSquad, secondSquad);
         }
 
@@ -69,7 +71,9 @@ namespace War
             }
         }
     }
-    
+
+
+
     class Squad
     {
         private StormTrooper _stormTrooper = new StormTrooper();
@@ -85,7 +89,7 @@ namespace War
             }
         }
 
-        public void CreateSquad(int amountOfSoldiers)
+        public void Create(int amountOfSoldiers)
         {
             Console.WriteLine("Заполните отряд какими-то солдатами: 1 - штурмовик, 2 - тяжелый штурмовик, 3 - снайпер");
             int userInput;
