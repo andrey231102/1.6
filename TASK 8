@@ -33,12 +33,12 @@ namespace War
                 if (firstSquad.CountSoldiers(firstSquad) > 0 && secondSquad.CountSoldiers(secondSquad) > 0)
                 {
                     Console.WriteLine("Атакует 1 отряд");
-                    firstSquad.AttackEnemy(firstSquad, secondSquad, random);
+                    firstSquad.AttackEnemy(secondSquad, random);
                 }
                 if (firstSquad.CountSoldiers(firstSquad) > 0 && secondSquad.CountSoldiers(secondSquad) > 0)
                 {
                     Console.WriteLine("Атакует 2 отряд");
-                    secondSquad.AttackEnemy(secondSquad, firstSquad, random);
+                    secondSquad.AttackEnemy(firstSquad, random);
                     Console.WriteLine("нажмите любую кнопку чтобы продолжить");
                     Console.ReadKey();
                 }
@@ -68,9 +68,9 @@ namespace War
 
     class Squad
     {
-        private StormTrooper _stormTrooper = new StormTrooper();
-        private HeavyTrooper _heavyTrooper = new HeavyTrooper();
-        private Sniper _sniper = new Sniper();
+        //private StormTrooper _stormTrooper  = new StormTrooper();
+        //private HeavyTrooper _heavyTrooper = new HeavyTrooper();
+        //private Sniper _sniper = new Sniper();
         private List<Soldier> _soldiers = new List<Soldier>();
 
         public void Create(int amountOfSoldiers)
@@ -88,15 +88,15 @@ namespace War
                 {
                     if (userInput == 1)
                     {
-                        _soldiers.Add(_stormTrooper);
+                        _soldiers.Add(new StormTrooper());
                     }
                     else if (userInput == 2)
                     {
-                        _soldiers.Add(_heavyTrooper);
+                        _soldiers.Add(new HeavyTrooper());
                     }
                     else if (userInput == 3)
                     {
-                        _soldiers.Add(_sniper);
+                        _soldiers.Add(new Sniper());
                     }
                     else
                     {
@@ -117,13 +117,13 @@ namespace War
             return squad._soldiers.Count;
         }
 
-        public void AttackEnemy(Squad attackerSquad, Squad defenderSquad, Random random)
+        public void AttackEnemy(Squad defenderSquad, Random random)
         {
             int defenderSoldier = random.Next(0, defenderSquad._soldiers.Count);
-            int attackerSoldier = random.Next(0, attackerSquad._soldiers.Count);
+            int attackerSoldier = random.Next(0, _soldiers.Count);
 
-            defenderSquad._soldiers[defenderSoldier].TakeDamage(attackerSquad._soldiers[attackerSoldier].Damage);
-            Console.WriteLine($"{defenderSquad._soldiers[defenderSoldier].Name} получил {attackerSquad._soldiers[attackerSoldier].Damage} урона от {attackerSquad._soldiers[attackerSoldier].Name}");
+            defenderSquad._soldiers[defenderSoldier].TakeDamage(_soldiers[attackerSoldier].Damage);
+            Console.WriteLine($"{defenderSquad._soldiers[defenderSoldier].Name} получил {_soldiers[attackerSoldier].Damage} урона от {_soldiers[attackerSoldier].Name}");
             defenderSquad._soldiers[defenderSoldier].ShowInfo();
             if (defenderSquad._soldiers[defenderSoldier].Health <= 0)
             {
