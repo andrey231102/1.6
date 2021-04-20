@@ -5,6 +5,11 @@ using System.Threading.Tasks;
 
 namespace Aquarium
 {
+
+    //Есть аквариум, в котором плавают рыбы.В этом аквариуме может быть максимум определенное кол-во рыб.
+    //Рыб можно добавить в аквариум или рыб можно достать из аквариума. (программу делать в цикле для того, чтобы рыбы могли “жить”)
+    //Все рыбы отображаются списком, у рыб также есть возраст.За 1 итерацию рыбы стареют на определенное кол-во жизней и могут умереть.
+    //Рыб также вывести в консоль, чтобы можно было мониторить показатели.
     class Program
     {
         static void Main(string[] args)
@@ -19,7 +24,6 @@ namespace Aquarium
         private Random _random = new Random();
         private List<Fish> _fishes = new List<Fish>();
         private int _deadFishes = 0;
-        private int _aliveFishes = 0;
         private int _addedFishes = 0;
 
         public void ControlPopulation()
@@ -32,38 +36,11 @@ namespace Aquarium
                 switch (userInput)
                 {
                     case "1":
-                        if (_fishes.Count == 20)
-                        {
-                            Console.WriteLine("В аквариум больше не влезет рыбок, ждите пока кто-то умрет отстарости либо позаботьтесь об этом самостоятельно");
-                        }
-                        else
-                        {
-                            _fishes.Add(new Fish(_random.Next(5, 13)));
-                            Console.WriteLine("Вы добавили рыбку");
-                            _addedFishes++;
-                        }
+                        AddFish();
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "2":
-                        Console.WriteLine("Рыбку под каким номером вы хотите удалить");
-                        int fishIndex = default;
-                        if (false == int.TryParse(Console.ReadLine(), out fishIndex))
-                        {
-                            Console.WriteLine("Это не номер");
-                        }
-                        else
-                        {
-                            if (fishIndex > _fishes.Count || fishIndex <= 0)
-                            {
-                                Console.WriteLine("такой рыбки нету");
-                            }
-                            else
-                            {
-                                Console.WriteLine("рыбка успешно покинула аквариум");
-                                _fishes.RemoveAt(fishIndex - 1);
-                                _deadFishes++;
-                            }
-                        }
+                        RemoveFish();
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "3":
@@ -75,25 +52,68 @@ namespace Aquarium
                 }
 
                 Console.WriteLine("Рыбки постарели и потеряли 1 хп");
-                for (int i = 0; i < _fishes.Count; i++)
-                {
-                    _fishes[i].GettingOld();
-                    Console.Write($"{i+1} рыбка - ");
-                    _fishes[i].ShowInfo();
-                    if (_fishes[i].Health == 0)
-                    {
-                        Console.WriteLine($"рыбка под номеров {i + 1} умерла от старости");
-                        _fishes.RemoveAt(i);
-                    }
-                }
+                ShowFishesAndStats();
             }
             ShowScore();
         }
 
+        public void AddFish()
+        {
+            if (_fishes.Count == 20)
+            {
+                Console.WriteLine("В аквариум больше не влезет рыбок, ждите пока кто-то умрет отстарости либо позаботьтесь об этом самостоятельно");
+            }
+            else
+            {
+                _fishes.Add(new Fish(_random.Next(5, 13)));
+                Console.WriteLine("Вы добавили рыбку");
+                _addedFishes++;
+            }
+        }
+
         public void ShowScore()
         {
-            _aliveFishes = _fishes.Count;
+            int _aliveFishes = _fishes.Count;
             Console.WriteLine($"В аквариуме осталось {_aliveFishes} рыбок, погибло {_deadFishes} рыбок, было добавлено за все время {_addedFishes} рыбок");
+        }
+
+        public void RemoveFish()
+        {
+            Console.WriteLine("Рыбку под каким номером вы хотите удалить");
+            int fishIndex = default;
+            if (false == int.TryParse(Console.ReadLine(), out fishIndex))
+            {
+                Console.WriteLine("Это не номер");
+            }
+            else
+            {
+                if (fishIndex > _fishes.Count || fishIndex <= 0)
+                {
+                    Console.WriteLine("такой рыбки нету");
+                }
+                else
+                {
+                    Console.WriteLine("рыбка успешно покинула аквариум");
+                    _fishes.RemoveAt(fishIndex - 1);
+                    _deadFishes++;
+                }
+            }
+        }
+
+        public void ShowFishesAndStats()
+        {
+            for (int i = 0; i < _fishes.Count; i++)
+            {
+                _fishes[i].GetOld();
+                Console.Write($"{i + 1} рыбка - ");
+                _fishes[i].ShowInfo();
+                if (_fishes[i].Health <= 0)
+                {
+                    Console.WriteLine($"рыбка под номеров {i + 1} умерла от старости");
+                    _fishes.RemoveAt(i);
+                    i--;
+                }
+            }
         }
     }
 
@@ -111,7 +131,7 @@ namespace Aquarium
             Console.WriteLine(Health + " хп");
         }
 
-        public void GettingOld()
+        public void GetOld()
         {
             Health--;
         }
