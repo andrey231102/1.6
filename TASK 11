@@ -1,0 +1,123 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CarService
+{
+
+//У вас есть автосервис, в который приезжают люди, чтобы починить свои автомобили.
+//У вашего автосервиса есть баланс денег и склад деталей.
+//Когда приезжает автомобиль, у него сразу ясна его поломка, и эта поломка отображается у вас в консоли вместе с ценой за починку(цена за починку складывается из цены детали + цена за работу).
+//Поломка всегда чинится заменой детали, но количество деталей ограничено тем, что находится на вашем складе деталей.
+//Если у вас нет нужной детали на складе, то вы можете отказать клиенту, и в этом случае вам придется выплатить штраф.
+//Если вы замените не ту деталь, то вам придется возместить ущерб клиенту.
+//За каждую удачную починку вы получаете выплату за ремонт, которая указана в чек-листе починки.
+
+    
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            AutoService autoService = new AutoService();
+            autoService.CreateCar(15);
+            autoService.Work();
+        }
+    }
+
+    class AutoService
+    {
+        static Random random = new Random();
+        private Queue<Car> _brokenCars = new Queue<Car>();
+        private int _money;
+        private List<Detail> _details = new List<Detail>
+        {
+            new Detail("двигатель",1000),
+            new Detail("краска", 200),
+            new Detail("ходовая",600),
+            new Detail("дверь",100),
+            new Detail("руль",50),
+            new Detail("кондиционер",300),
+            new Detail("педали",350)
+
+        };
+
+        public void CreateWareHouse()
+        {
+
+        }
+
+        public void CreateCar(int amountOfBrokenCars)
+        {
+            for (int i = 0; i < amountOfBrokenCars; i++)
+            {
+                Car car = new Car();
+                car.BreakDown(_details);
+                _brokenCars.Enqueue(car);
+            }
+        }
+
+        public void Work()
+        {
+            foreach (var car in _brokenCars)
+            {
+                car.ShowBrokenDetails();
+            }
+        }
+    }
+
+    class Car
+    {
+        private Random _random = new Random();
+        private List<Detail> _brokenDetails;
+
+        public void BreakDown(List<Detail> details)
+        {
+            int amountOfBrokenDetails = _random.Next(1, details.Count);
+            _brokenDetails = new List<Detail>(amountOfBrokenDetails);
+
+            for (int i = 0; i < _brokenDetails.Capacity; i++)
+            {
+                _brokenDetails.Add(details[_random.Next(0,details.Count)]);
+            }
+
+            for (int i = 0; i < _brokenDetails.Count; i++)
+            {
+                for (int t = 0; t < _brokenDetails.Count; t++)
+                {
+                    if (i!=t && _brokenDetails[i] == _brokenDetails[t])
+                    {
+                        _brokenDetails.RemoveAt(t);
+                    }
+                }
+            }
+        }
+
+        public void ShowBrokenDetails()
+        {
+            Console.WriteLine("Мне нужно починить:");
+            foreach (var detail in _brokenDetails)
+            {
+                detail.ShowInfo();
+            }
+        }
+
+    }
+
+    class Detail
+    {
+        public string Name { get; private set; } 
+        public int RepairCost { get; private set; }
+
+        public Detail(string name, int repairCost)
+        {
+            Name = name;
+            RepairCost = repairCost;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine(Name + " - " + RepairCost + " денег");
+        }
+    }
+}
