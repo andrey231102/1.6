@@ -1,0 +1,116 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NewZoo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Zoo zoo = new Zoo();
+            zoo.ChooseCage();
+        }
+    }
+
+    class Zoo
+    {
+        private LionsCage _lionsCage = new LionsCage();
+        private BirdsCage _birdsCage = new BirdsCage();
+        private DucksCage _ducksCage = new DucksCage();
+        private HyenasCage _hyenasCage = new HyenasCage();
+        public void ChooseCage()
+        {
+            Console.WriteLine("К вольеру каких животных вы хотите подойти: 1 - львы, 2 - птички, 3 - утки, 4 - гиены, 5 - покинуть зоопарк");
+            string userInput = default;
+
+            while (userInput!="5")
+            {
+                userInput = Console.ReadLine();
+                switch (userInput)
+                {
+                    case "1":
+                        _lionsCage.ShowInfo();
+                        break;
+                    case "2":
+                        _birdsCage.ShowInfo();
+                        break;
+                    case "3":
+                        _ducksCage.ShowInfo();
+                        break;
+                    case "4":
+                        _hyenasCage.ShowInfo();
+                        break;
+                    case "5":
+                        Console.WriteLine("вы покинули программу");
+                        break;
+                    default:
+                        Console.WriteLine("такого вольера нету");
+                        break;
+                }
+            }
+        }
+    }
+
+    class Cage
+    {
+        protected Random Random = new Random();
+        protected string Name;
+        protected int AnimalCount;
+        protected string Voice;
+        protected List<string> Genders = new List<string>();
+
+        public Cage(string name, int animalCount, string voice)
+        {
+            Name = name;
+            AnimalCount = animalCount;
+            Voice = voice;
+        }
+
+        public void FindGender()
+        {
+            for (int i = 0; i < AnimalCount; i++)
+            {
+                if (Random.Next(0, 2) == 0)
+                {
+                    Genders.Add("девочка");
+                }
+                else
+                {
+                    Genders.Add("мальчик");
+                }
+            }
+        }
+
+        public void ShowInfo()
+        {
+            FindGender();
+            Console.WriteLine($"тут сидят {Name}. Всего {AnimalCount} штук. Они говорят {Voice}");
+            for (int i = 0; i < AnimalCount; i++)
+            {
+                Console.WriteLine($"{i+1} - {Genders[i]}");
+            }
+        }
+    }
+
+    class LionsCage : Cage
+    {
+        public LionsCage() : base("львы", 5, "ROOOOOOOOOOOOAR") { }
+    }
+
+    class BirdsCage : Cage
+    {
+        public BirdsCage() : base("птички", 13, "tweet tweet tweet") { }
+    }
+
+    class DucksCage : Cage
+    {
+        public DucksCage() : base("утки",8,"GAGAGAGAGA") { }
+    }
+
+    class HyenasCage : Cage
+    {
+        public HyenasCage() : base("гиены", 6, "AHAAHHAHA") { }
+    }
+}
