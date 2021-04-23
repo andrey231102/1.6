@@ -2,39 +2,49 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace NewZoo
+namespace zoo
 {
+    //Пользователь запускает приложение и перед ним находится меню, в котором он может выбрать, к какому вольеру подойти.
+    //При приближении к вольеру, пользователю выводится информация о том, что это за вольер, сколько животных там обитает, их пол и какой звук издает животное.
+    //Вольеров в зоопарке может быть много, в решении нужно создать минимум 4 вольера
     class Program
     {
         static void Main(string[] args)
         {
             Zoo zoo = new Zoo();
-            zoo.ChooseCage();
+            zoo.Work();
         }
     }
 
     class Zoo
     {
-        private List<Cage> _cages = new List<Cage>() 
-        {
-            new LionsCage(), 
-            new BirdsCage(), 
-            new DucksCage(), 
-            new HyenasCage()
-        };
+        Lion lion = new Lion();
+        Canary canary = new Canary();
+        Duck duck = new Duck();
+        Hyena hyena = new Hyena();
 
-        public void ChooseCage()
+        private List<Cage> _cages = new List<Cage>();
+
+        public void Createcage()
         {
+            _cages.Add(new Cage("Лев", 12, lion));
+            _cages.Add(new Cage("Канарейка", 15, canary));
+            _cages.Add(new Cage("утка", 19, duck));
+            _cages.Add(new Cage("гиена", 5, hyena));
+        }
+
+        public void Work()
+        {
+            Createcage();
             Console.WriteLine("К вольеру каких животных вы хотите подойти: 1 - львы, 2 - птички, 3 - утки, 4 - гиены, 5 - покинуть зоопарк");
             string userInput = default;
 
-            while (userInput!="5")
+            while (userInput != "5")
             {
                 userInput = Console.ReadLine();
                 switch (userInput)
                 {
-                    case "1":
+                    case "1":   
                         _cages[0].ShowInfo();
                         break;
                     case "2":
@@ -57,64 +67,48 @@ namespace NewZoo
         }
     }
 
-    abstract class Cage
+    class Cage
     {
-        private Animal _animal = new Animal();
-        private Random _random = new Random();
-        private string _name;
-        private int _animalCount;
-        private string _voice;
-        protected List<string> _animals = new List<string>();
+        private List<Animal> _animals = new List<Animal>();
 
-        public Cage(string name, int animalCount, string voice)
-        {
-            _name = name;
-            _animalCount = animalCount;
-            _voice = voice;
-        }
+        public string Name { get; private set; }
 
-        public void FillCage()
+        public Cage(string name, int amountOfSpecies, Animal animal)
         {
-            for (int i = 0; i < _animalCount; i++)
+            Name = name;
+            for (int i = 0; i < amountOfSpecies; i++)
             {
-                _animals.Add(_animal.FindGender(_random));
+                _animals.Add(new Animal(animal.Name, animal.Voice) );
             }
         }
-        
+
         public void ShowInfo()
         {
-            FillCage();
-            Console.WriteLine($"тут сидят {_name}. Всего {_animalCount} штук. Они говорят {_voice}");
-            for (int i = 0; i < _animalCount; i++)
+            Console.WriteLine($"Здесь находится {_animals.Count} животных вида {_animals[0].Name}");
+            for (int i = 0; i < _animals.Count; i++)
             {
-                Console.WriteLine($"{i+1} - {_animals[i]}");
+                Console.WriteLine($"{i+1}.{_animals[i].Name} - {_animals[i].Gender}");
+                Console.WriteLine($"{_animals[i].Voice}");
             }
         }
     }
 
-    class LionsCage : Cage
-    {
-        public LionsCage() : base("львы", 5, "ROOOOOOOOOOOOAR") { }
-    }
+     class Animal
+     {
+        private Random _random = new Random();
 
-    class BirdsCage : Cage
-    {
-        public BirdsCage() : base("птички", 13, "tweet tweet tweet") { }
-    }
+        public string Name { get; private set; }
+        public string Gender { get; private set; }
+        public string Voice { get; private set; }
 
-    class DucksCage : Cage
-    {
-        public DucksCage() : base("утки",8,"GAGAGAGAGA") { }
-    }
+        public Animal(string name, string voice)
+        {
+            Name = name;
+            Voice = voice;
+            Gender = DetermineGender(_random);
+        }
 
-    class HyenasCage : Cage
-    {
-        public HyenasCage() : base("гиены", 6, "AHAAHHAHA") { }
-    }
-
-    class Animal
-    {
-        public string FindGender(Random random)
+        public string DetermineGender(Random random)
         {
             if (random.Next(0, 2) == 0)
             {
@@ -125,5 +119,25 @@ namespace NewZoo
                 return "мальчик";
             }
         }
+     }
+
+    class Lion : Animal
+    {
+        public Lion() : base("лев","ROOOOOOOOAAAAR"){ }
+    }
+
+    class Canary : Animal
+    {
+        public Canary() : base("канарейка","tweet tweet tweet") { }
+    }
+
+    class Duck : Animal
+    {
+        public Duck() : base("утка","gagagagagaga") { }
+    }
+
+    class Hyena : Animal 
+    {
+        public Hyena() : base("гиена","AHAHAHHAHAHAHA") { }
     }
 }
