@@ -25,7 +25,7 @@ namespace zoo
 
         private List<Cage> _cages = new List<Cage>();
 
-        public void Createcage()
+        public void CreateCages()
         {
             _cages.Add(new Cage("Лев", 12, lion));
             _cages.Add(new Cage("Канарейка", 15, canary));
