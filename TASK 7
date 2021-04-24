@@ -3,134 +3,138 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SuperMarket
+namespace CarService
 {
+
+//У вас есть автосервис, в который приезжают люди, чтобы починить свои автомобили.
+//У вашего автосервиса есть баланс денег и склад деталей.
+//Когда приезжает автомобиль, у него сразу ясна его поломка, и эта поломка отображается у вас в консоли вместе с ценой за починку(цена за починку складывается из цены детали + цена за работу).
+//Поломка всегда чинится заменой детали, но количество деталей ограничено тем, что находится на вашем складе деталей.
+//Если у вас нет нужной детали на складе, то вы можете отказать клиенту, и в этом случае вам придется выплатить штраф.
+//Если вы замените не ту деталь, то вам придется возместить ущерб клиенту.
+//За каждую удачную починку вы получаете выплату за ремонт, которая указана в чек-листе починки.
+
+    
     class Program
     {
         static void Main(string[] args)
         {
-            Queue<Customer> _customers = new Queue<Customer>();
-            Market market = new Market();
-            market.CreateCustomers(20);
-            market.Work();
+            AutoService autoService = new AutoService();
+            autoService.CreateCar(15);
+            autoService.Work();
         }
     }
 
-    class Market
+    class AutoService
     {
-        private Queue<Customer> _customers = new Queue<Customer>();
-        private Random _random = new Random();
-        private List<Product> _products = new List<Product>
+        private Dictionary<Detail, int> _wareHouse = new Dictionary<Detail, int>();
+        public void CreateWarehouse()
         {
-            new Product(150, "колбаса"),
-            new Product(30, "молоко"),
-            new Product(8, "хлеб"),
-            new Product(45, "морковь"),
-            new Product(30, "картошка"),
-            new Product(14, "вода"),
-            new Product(44, "рис"),
-            new Product(13, "жвачка"),
-            new Product(14, "сникерс")
-        };
+            _wareHouse.Add(new Detail("руль", 200), 5);
+            _wareHouse.Add(new Detail("коробка передач", 300), 5);
+            _wareHouse.Add(new Detail("радио", 250), 5);
+            _wareHouse.Add(new Detail("двигатель", 800), 5);
+            _wareHouse.Add(new Detail("ходовая", 500), 5);
+            _wareHouse.Add(new Detail("краска", 100), 5);
+            _wareHouse.Add(new Detail("печка", 400), 5);
+            _wareHouse.Add(new Detail("кондицианер", 450), 5);
+        }
 
-        public void CreateCustomers(int amountOfCustomers)
+        private Queue<Car> _brokenCars = new Queue<Car>();
+        public void CreateCar(int amountOfBrokenCars)
         {
-            for (int i = 0; i < amountOfCustomers; i++)
+            for (int i = 0; i < amountOfBrokenCars; i++)
             {
-                Customer customer = new Customer(_random.Next(500, 701));
-                customer.TakeGoods(_products);
-                _customers.Enqueue(customer);
+                Car car = new Car();
+                car.BreakDown();
+                _brokenCars.Enqueue(car);
             }
         }
 
         public void Work()
         {
-            int income = 0;
-            while (_customers.Count > 0)
+            CreateWarehouse();
+            while (_brokenCars.Count>0)
             {
-                Console.WriteLine($"Вы заработали {income}");
-                Customer customer = _customers.Dequeue();
-                Console.WriteLine($"У этого человека {customer.Money} гривен, он хочет купить: ");
-                customer.ShowBag();
-                income += customer.WasteMoney();
+                Car car = _brokenCars.Dequeue();
+                car.ShowBrokenDetails();
+                ReplacePart(car);
                 Console.WriteLine("Нажмите любую кнопку чтобы перейти к следующему покупателю");
-                Console.ReadLine();
+                Console.ReadKey();
             }
-            Console.WriteLine($"Рабочий день все, вы заработали за день {income} денег");
+        }
+
+        public void ReplacePart(Car car)
+        {
+            for (int i = 0; i < car._brokenParts.Count; i++)
+            {
+                if (_wareHouse.ContainsKey(car._brokenParts[i]))
+                {
+                    Console.WriteLine("Машина как новая");
+                }
+            }
         }
     }
 
-    class Customer
+    class Car
     {
-        private List<Product> _bag;
-        private int _sum;
-        static private Random _random = new Random();
+        private Random _random = new Random();
+        private List<Detail> _spareParts = new List<Detail> 
+        { 
+            new Detail("руль", 200), 
+            new Detail("коробка передач", 300), 
+            new Detail("радио", 250), 
+            new Detail("двигатель", 800),
+            new Detail("ходовая", 500),
+            new Detail("краска", 100),
+            new Detail("печка", 400),
+            new Detail("кондицианер", 450),
+        };
+        public List<Detail> _brokenParts = new List<Detail>();
 
-        public int Money { get; private set; }
-
-        public Customer(int money)
+        public void BreakDown()
         {
-            Money = money;
-        }
-
-        public void TakeGoods(List<Product> products)
-        {
-            int amountOfProducts = products.Count;
-            int bagCapacity = _random.Next(5, 16);
-            _bag = new List<Product>(bagCapacity);
-
-            for (int i = 0; i < _bag.Capacity; i++)
+            int amountOfBrokenDetails = _random.Next(1, _spareParts.Count);
+            for (int i = 0; i < amountOfBrokenDetails; i++)
             {
-                _bag.Add(products[_random.Next(0,amountOfProducts)]);
+                _brokenParts.Add(_spareParts[_random.Next(0, _spareParts.Count)]);
             }
-        }
-
-        public void ShowBag()
-        {
-            for (int i = 0; i < _bag.Count; i++)
+            for (int i = 0; i < _brokenParts.Count; i++)
             {
-                _bag[i].ShowInfo();
-                _sum += _bag[i].Cost;
-            }
-            Console.WriteLine($"Необходимая сумма для покупки: {_sum} денег");
-        }
-
-        public int WasteMoney()
-        {
-            while (Money < _sum)
-            {
-                if (_bag.Count == 0 )
+                for (int t = 1; t < _brokenParts.Count; t++)
                 {
-                    Console.WriteLine("Покупатель ушел, у него нету денег и товаров");
-                    return 0;
-                }
-                else
-                {
-                    int index = _random.Next(0, _bag.Count);
-                    _sum -= _bag[index].Cost;
-                    Console.WriteLine($"Покупатель выбросил - {_bag[index].Name}, новая цена его товаров - {_sum}");
-                    _bag.RemoveAt(index);
+                    if (_brokenParts[i]==_brokenParts[t] && t>i)
+                    {
+                        _brokenParts.RemoveAt(t);
+                    }
                 }
             }
-            Console.WriteLine($"Покупка прошла успешно, у покупателя осталось {Money-=_sum} денег");
-            return _sum;
+        }
+
+        public void ShowBrokenDetails()
+        {
+            Console.WriteLine("Мне нужно починить: ");
+            foreach (var brokenPart in _brokenParts)
+            {
+                Console.WriteLine(brokenPart.Name + " " + brokenPart.RepairCost);
+            }
         }
     }
 
-    class Product
+    class Detail
     {
-        public int Cost { get; private set;}
-        public string Name { get; private set;}
+        public string Name { get; private set; } 
+        public int RepairCost { get; private set; }
 
-        public Product(int cost, string name)
+        public Detail(string name, int repairCost)
         {
-            Cost = cost;
             Name = name;
+            RepairCost = repairCost;
         }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"{Name} - {Cost} денег");
+            Console.WriteLine(Name + " - " + RepairCost + " денег");
         }
     }
 }
