@@ -4,8 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CarService
-{
-  
+{   
     class Program
     {
         static void Main(string[] args)
@@ -18,7 +17,10 @@ namespace CarService
 
     class AutoService
     {
+        private int _income;
+
         private Dictionary<string, int> _wareHouse = new Dictionary<string, int>();
+
         public void CreateWarehouse()
         {
             _wareHouse.Add("руль", 5);
@@ -29,6 +31,14 @@ namespace CarService
             _wareHouse.Add("краска", 5);
             _wareHouse.Add("печка", 5);
             _wareHouse.Add("кондиционер", 5);
+        }
+
+        public void ShowWareHouse()
+        {
+            foreach (var detail in _wareHouse)
+            {
+                Console.WriteLine($"деталь - {detail.Key}, количество - {detail.Value}");
+            }
         }
 
         private Queue<Car> _brokenCars = new Queue<Car>();
@@ -51,8 +61,10 @@ namespace CarService
                 car.ShowBrokenDetails();
                 ReplacePart(car);
                 Console.WriteLine("Нажмите любую кнопку чтобы перейти к следующему покупателю");
-                //Console.ReadLine();
+                Console.ReadLine();
             }
+
+            Console.WriteLine($"рабочий день окончен, вы заработали {_income}");
         }
 
         public void ReplacePart(Car car)
@@ -62,13 +74,18 @@ namespace CarService
                 if (_wareHouse.ContainsKey(car._brokenParts[i].Name) && _wareHouse[car._brokenParts[i].Name] >0 )
                 {
                     Console.WriteLine($"Деталь {car._brokenParts[i].Name} заменена");
+                    _income += car.WasteMoney(i);
                     _wareHouse[car._brokenParts[i].Name]--;
                 }
                 else
                 {
-                    Console.WriteLine($"деталь {car._brokenParts[i].Name} отсутствует на складе");
+                    _income -= car._brokenParts[i].RepairCost;
+                    Console.WriteLine($"деталь {car._brokenParts[i].Name} отсутствует на складе, возвращаем вам  {car._brokenParts[i].RepairCost} денег");
+
                 }
             }
+            Console.WriteLine($"в вашей копилке {_income}. на складе есть такие детали:");
+            ShowWareHouse();
         }
     }
 
@@ -103,12 +120,19 @@ namespace CarService
                     {
                         _brokenParts.RemoveAt(t);
                     }
-                    else if(_brokenParts[i] == _brokenParts[t] && t < i)
-                    {
-                        _brokenParts.RemoveAt(i);
-                    }
+                    //else if (_brokenParts[i] == _brokenParts[t] && t > i)
+                    //{
+                    //    _brokenParts.RemoveAt(t);
+                    //}
                 }
             }
+        }
+
+        public int WasteMoney(int index)
+        {
+            int money = 0;
+            money += _brokenParts[index].RepairCost;
+            return money;
         }
 
         public void ShowBrokenDetails()
