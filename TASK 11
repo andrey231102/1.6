@@ -57,9 +57,12 @@ namespace CarService
             {
                 Car car = _brokenCars.Dequeue();
                 car.ShowBrokenDetails();
-                ReplacePart(car);
-                Console.WriteLine("Нажмите любую кнопку чтобы перейти к следующему покупателю");
+                Console.WriteLine("Нажмите enter чтоблы посмотреть что можно с этой машиной сделать");
                 Console.ReadLine();
+                ReplacePart(car);
+                Console.WriteLine("Нажмите любую кнопку чтобы перейти к следующей машине");
+                Console.ReadLine();
+                Console.Clear();
             }
 
             Console.WriteLine($"рабочий день окончен, вы заработали {_income}");
