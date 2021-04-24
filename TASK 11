@@ -53,38 +53,96 @@ namespace CarService
         {
             Car model = new Car();
             CreateWarehouse(model);
+
             while (_brokenCars.Count>0)
             {
                 Car car = _brokenCars.Dequeue();
                 car.ShowBrokenDetails();
                 Console.WriteLine("Нажмите enter чтоблы посмотреть что можно с этой машиной сделать");
                 Console.ReadLine();
-                ReplacePart(car);
+                Console.WriteLine("Вы хотите попробовать починить этот автомобиль? 1 - приступить к работе, 2 - отказать в работе");
+                string userInput = default;
+                bool nextCar = true;    
+                while (nextCar)
+                {
+                    userInput = Console.ReadLine();
+                    if (userInput == "1")
+                    {
+                        ReplacePart(car);
+                        nextCar = false;
+                    }
+                    else if(userInput =="2")
+                    {
+                        Console.WriteLine("Он уехал, но мы вынуждены были выплатить штраф в размере 500 - 1500 денег за моральный ущерб");
+                        _income -= _random.Next(500, 1500);
+                        Console.WriteLine($"У вас осталось {_income} денег");
+                        nextCar = false;
+                    }
+                    else
+                    {
+                        Console.WriteLine("такой функции нету");
+                    }
+                }
                 Console.WriteLine("Нажмите любую кнопку чтобы перейти к следующей машине");
                 Console.ReadLine();
                 Console.Clear();
             }
-
-            Console.WriteLine($"рабочий день окончен, вы заработали {_income}");
+            if (_income>0)
+            {
+                Console.WriteLine($"рабочий день окончен, вы заработали {_income}");
+            }
+            else
+            {
+                Console.WriteLine("Вы влезли в долги, начальник будет недоволен");
+            }
         }
 
         public void ReplacePart(Car car)
         {
+
             for (int i = 0; i < car.BrokenDetailsCount; i++)
             {
                 if (_wareHouse.ContainsKey(car.GetDetailName(i)) && _wareHouse[car.GetDetailName(i)] > 0)
                 {
-                Console.WriteLine($"Деталь {car.GetDetailName(i)} заменена");
-                _income += car.BuyParts(i);
-                _wareHouse[car.GetDetailName(i)]--;
+                    Console.WriteLine($"Деталь {car.GetDetailName(i)} заменена");
+                    _income += car.BuyPart(i);
+                    _wareHouse[car.GetDetailName(i)]--;
                 }
                 else
                 {
-                _income -= car.GetDetailPrice(i);
-                Console.WriteLine($"деталь {car.GetDetailName(i)} отсутствует на складе, возвращаем вам  {car.GetDetailPrice(i)} денег");
+                    bool isWorking = true;
+                    Console.WriteLine("такая деталь отсутствует, выплатим штраф или же рискнем заменить ее подручными средствами. 1 - выплатить штраф, 2 - рискнуть");
+                    while (isWorking)
+                    {
+                        string userInput = Console.ReadLine();
+                        switch (userInput)
+                        {
+                            case "1":
+                                _income -= car.GetDetailPrice(i);
+                                Console.WriteLine($"деталь {car.GetDetailName(i)} отсутствует на складе, выплачиваем штраф - {car.GetDetailPrice(i)} денег");
+                                break;
+                            case "2":
+                                if (_random.Next(0, 2) == 0)
+                                {
+                                    Console.WriteLine($"Ура, водитель ничего не понял и машина ездит, а мы получили полную сумму за починку. ");
+                                    _income += car.BuyPart(i);
+                                    isWorking = false;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Нас поймали, выплачиваем приличный штраф ");
+                                    _income -= 2 * car.BuyPart(i);
+                                    isWorking = false;
+                                }
+                                break;
+                            default:
+                                Console.WriteLine("так сделать нельзя");
+                                break;
+                        }
+                    }
                 }
             }
-        Console.WriteLine($"в вашей копилке {_income}. на складе есть такие детали:");
+        Console.WriteLine($"в вашей копилке {_income}. на складе остались такие детали:");
             ShowWareHouse();
         }
     }
@@ -127,7 +185,7 @@ namespace CarService
             }
         }
 
-        public int BuyParts(int index)
+        public int BuyPart(int index)
         {
             return _brokenParts[index].RepairCost;
         }
@@ -174,3 +232,4 @@ namespace CarService
         }
     }
 }
+
