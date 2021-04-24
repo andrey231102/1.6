@@ -17,20 +17,17 @@ namespace CarService
 
     class AutoService
     {
+        private Random _random = new Random();
         private int _income;
-
         private Dictionary<string, int> _wareHouse = new Dictionary<string, int>();
 
-        public void CreateWarehouse()
+        public void CreateWarehouse(Car car)
         {
-            _wareHouse.Add("руль", 5);
-            _wareHouse.Add("коробка передач", 5);
-            _wareHouse.Add("радио", 5);
-            _wareHouse.Add("двигатель", 5);
-            _wareHouse.Add("ходовая", 5);
-            _wareHouse.Add("краска", 5);
-            _wareHouse.Add("печка", 5);
-            _wareHouse.Add("кондиционер", 5);
+            for (int i = 0; i < car.CountSpareParts(); i++)
+            {
+                int amountOfDetails = _random.Next(3, 9);
+                _wareHouse.Add(car.getpart(i), amountOfDetails);
+            }
         }
 
         public void ShowWareHouse()
@@ -54,7 +51,8 @@ namespace CarService
 
         public void Work()
         {
-            CreateWarehouse();
+            Car model = new Car();
+            CreateWarehouse(model);
             while (_brokenCars.Count>0)
             {
                 Car car = _brokenCars.Dequeue();
@@ -69,19 +67,18 @@ namespace CarService
 
         public void ReplacePart(Car car)
         {
-            for (int i = 0; i < car._brokenParts.Count; i++)
+            for (int i = 0; i < car.CountBrokenDetails(); i++)
             {
-                if (_wareHouse.ContainsKey(car._brokenParts[i].Name) && _wareHouse[car._brokenParts[i].Name] >0 )
+                if (_wareHouse.ContainsKey(car.GetDetailName(i)) && _wareHouse[car.GetDetailName(i)] >0 )
                 {
-                    Console.WriteLine($"Деталь {car._brokenParts[i].Name} заменена");
+                    Console.WriteLine($"Деталь {car.GetDetailName(i)} заменена");
                     _income += car.WasteMoney(i);
-                    _wareHouse[car._brokenParts[i].Name]--;
+                    _wareHouse[car.GetDetailName(i)]--;
                 }
                 else
                 {
-                    _income -= car._brokenParts[i].RepairCost;
-                    Console.WriteLine($"деталь {car._brokenParts[i].Name} отсутствует на складе, возвращаем вам  {car._brokenParts[i].RepairCost} денег");
-
+                    _income -= car.GetDetailPrice(i);
+                    Console.WriteLine($"деталь {car.GetDetailName(i)} отсутствует на складе, возвращаем вам  {car.GetDetailPrice(i)} денег");
                 }
             }
             Console.WriteLine($"в вашей копилке {_income}. на складе есть такие детали:");
@@ -92,18 +89,19 @@ namespace CarService
     class Car
     {
         private Random _random = new Random();
-        private List<Detail> _spareParts = new List<Detail> 
-        { 
-            new Detail("руль", 200), 
-            new Detail("коробка передач", 300), 
-            new Detail("радио", 250), 
+        static private List<Detail> _spareParts = new List<Detail>
+        {
+            new Detail("руль", 200),
+            new Detail("коробка передач", 300),
+            new Detail("радио", 250),
             new Detail("двигатель", 800),
             new Detail("ходовая", 500),
             new Detail("краска", 100),
             new Detail("печка", 400),
             new Detail("кондиционер", 450),
         };
-        public List<Detail> _brokenParts = new List<Detail>();
+
+        private List<Detail> _brokenParts = new List<Detail>();
 
         public void BreakDown()
         {
@@ -120,10 +118,6 @@ namespace CarService
                     {
                         _brokenParts.RemoveAt(t);
                     }
-                    //else if (_brokenParts[i] == _brokenParts[t] && t > i)
-                    //{
-                    //    _brokenParts.RemoveAt(t);
-                    //}
                 }
             }
         }
@@ -142,6 +136,33 @@ namespace CarService
             {
                 Console.WriteLine(brokenPart.Name + " " + brokenPart.RepairCost);
             }
+        }
+
+        public int CountBrokenDetails()
+        {
+            int amountOfBrokenDetails = _brokenParts.Count;
+            return amountOfBrokenDetails;
+        }
+
+        public string GetDetailName(int index)
+        {
+            return _brokenParts[index].Name;
+        }
+
+        public int GetDetailPrice(int index)
+        {
+            return _brokenParts[index].RepairCost;
+        }
+
+        public int CountSpareParts()
+        {
+            int amountOfSpareParts = _spareParts.Count;
+            return amountOfSpareParts;
+        }
+
+        public string getpart(int index)
+        {
+            return _spareParts[index].Name;
         }
     }
 
