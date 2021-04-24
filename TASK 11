@@ -23,10 +23,10 @@ namespace CarService
 
         public void CreateWarehouse(Car car)
         {
-            for (int i = 0; i < car.CountSpareParts(); i++)
+            for (int i = 0; i < car.SparePartsCount; i++)
             {
                 int amountOfDetails = _random.Next(3, 9);
-                _wareHouse.Add(car.getpart(i), amountOfDetails);
+                _wareHouse.Add(car.GetPart(i), amountOfDetails);
             }
         }
 
@@ -70,21 +70,21 @@ namespace CarService
 
         public void ReplacePart(Car car)
         {
-            for (int i = 0; i < car.CountBrokenDetails(); i++)
+            for (int i = 0; i < car.BrokenDetailsCount; i++)
             {
-                if (_wareHouse.ContainsKey(car.GetDetailName(i)) && _wareHouse[car.GetDetailName(i)] >0 )
+                if (_wareHouse.ContainsKey(car.GetDetailName(i)) && _wareHouse[car.GetDetailName(i)] > 0)
                 {
-                    Console.WriteLine($"Деталь {car.GetDetailName(i)} заменена");
-                    _income += car.WasteMoney(i);
-                    _wareHouse[car.GetDetailName(i)]--;
+                Console.WriteLine($"Деталь {car.GetDetailName(i)} заменена");
+                _income += car.BuyParts(i);
+                _wareHouse[car.GetDetailName(i)]--;
                 }
                 else
                 {
-                    _income -= car.GetDetailPrice(i);
-                    Console.WriteLine($"деталь {car.GetDetailName(i)} отсутствует на складе, возвращаем вам  {car.GetDetailPrice(i)} денег");
+                _income -= car.GetDetailPrice(i);
+                Console.WriteLine($"деталь {car.GetDetailName(i)} отсутствует на складе, возвращаем вам  {car.GetDetailPrice(i)} денег");
                 }
             }
-            Console.WriteLine($"в вашей копилке {_income}. на складе есть такие детали:");
+        Console.WriteLine($"в вашей копилке {_income}. на складе есть такие детали:");
             ShowWareHouse();
         }
     }
@@ -103,8 +103,10 @@ namespace CarService
             new Detail("печка", 400),
             new Detail("кондиционер", 450),
         };
-
         private List<Detail> _brokenParts = new List<Detail>();
+
+        public int BrokenDetailsCount => _brokenParts.Count;
+        public int SparePartsCount => _spareParts.Count;
 
         public void BreakDown()
         {
@@ -113,11 +115,11 @@ namespace CarService
             {
                 _brokenParts.Add(_spareParts[_random.Next(0, _spareParts.Count)]);
             }
-            for (int i = 0; i < _brokenParts.Count-1; i++)
+            for (int i = 0; i < _brokenParts.Count - 1; i++)
             {
-                for (int t = 1; t < _brokenParts.Count; t++)
+                for (int t = i; t < _brokenParts.Count; t++)
                 {
-                    if (_brokenParts[i]==_brokenParts[t] && t >i)
+                    if (_brokenParts[i] == _brokenParts[t] && t > i)
                     {
                         _brokenParts.RemoveAt(t);
                     }
@@ -125,11 +127,9 @@ namespace CarService
             }
         }
 
-        public int WasteMoney(int index)
+        public int BuyParts(int index)
         {
-            int money = 0;
-            money += _brokenParts[index].RepairCost;
-            return money;
+            return _brokenParts[index].RepairCost;
         }
 
         public void ShowBrokenDetails()
@@ -139,12 +139,6 @@ namespace CarService
             {
                 Console.WriteLine(brokenPart.Name + " " + brokenPart.RepairCost);
             }
-        }
-
-        public int CountBrokenDetails()
-        {
-            int amountOfBrokenDetails = _brokenParts.Count;
-            return amountOfBrokenDetails;
         }
 
         public string GetDetailName(int index)
@@ -157,13 +151,7 @@ namespace CarService
             return _brokenParts[index].RepairCost;
         }
 
-        public int CountSpareParts()
-        {
-            int amountOfSpareParts = _spareParts.Count;
-            return amountOfSpareParts;
-        }
-
-        public string getpart(int index)
+        public string GetPart(int index)
         {
             return _spareParts[index].Name;
         }
