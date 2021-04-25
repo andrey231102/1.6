@@ -9,8 +9,7 @@ namespace CarService
     {
         static void Main(string[] args)
         {
-            AutoService autoService = new AutoService();
-            autoService.CreateCar(15);
+            AutoService autoService = new AutoService(5);
             autoService.Work();
         }
     }
@@ -20,14 +19,35 @@ namespace CarService
         private int _income;
         private Random _random = new Random();
         private Queue<Car> _brokenCars = new Queue<Car>();
+        private List<Detail> _spareParts = new List<Detail>
+        {
+            new Detail("руль", 200),
+            new Detail("коробка передач", 300),
+            new Detail("радио", 250),
+            new Detail("двигатель", 800),
+            new Detail("ходовая", 500),
+            new Detail("краска", 100),
+            new Detail("печка", 400),
+            new Detail("кондиционер", 450),
+        };
         private Dictionary<string, int> _wareHouse = new Dictionary<string, int>();
 
-        public void CreateWarehouse(Car car)
+        public AutoService(int amountOfBrokenCars)
         {
-            for (int i = 0; i < car.SparePartsCount; i++)
+            for (int i = 0; i < amountOfBrokenCars; i++)
+            {
+                Car car = new Car();
+                car.BreakDown(_spareParts);
+                _brokenCars.Enqueue(car);
+            }
+        }
+
+        public void CreateWarehouse()
+        {
+            for (int i = 0; i < _spareParts.Count; i++)
             {
                 int amountOfDetails = _random.Next(3, 9);
-                _wareHouse.Add(car.GetPart(i), amountOfDetails);
+                _wareHouse.Add(_spareParts[i].Name, amountOfDetails);
             }
         }
 
@@ -39,20 +59,9 @@ namespace CarService
             }
         }
 
-        public void CreateCar(int amountOfBrokenCars)
-        {
-            for (int i = 0; i < amountOfBrokenCars; i++)
-            {
-                Car car = new Car();
-                car.BreakDown();
-                _brokenCars.Enqueue(car);
-            }
-        }
-
         public void Work()
         {
-            Car model = new Car();
-            CreateWarehouse(model);
+            CreateWarehouse();
 
             while (_brokenCars.Count>0)
             {
@@ -151,28 +160,16 @@ namespace CarService
     class Car
     {
         private static Random _random = new Random();
-        private List<Detail> _spareParts = new List<Detail>
-        {
-            new Detail("руль", 200),
-            new Detail("коробка передач", 300),
-            new Detail("радио", 250),
-            new Detail("двигатель", 800),
-            new Detail("ходовая", 500),
-            new Detail("краска", 100),
-            new Detail("печка", 400),
-            new Detail("кондиционер", 450),
-        };
         private List<Detail> _brokenParts = new List<Detail>();
 
         public int BrokenDetailsCount => _brokenParts.Count;
-        public int SparePartsCount => _spareParts.Count;
 
-        public void BreakDown()
+        public void BreakDown(List<Detail> spareParts)
         {
-            int amountOfBrokenDetails = _random.Next(1, _spareParts.Count);
+            int amountOfBrokenDetails = _random.Next(1, spareParts.Count);
             for (int i = 0; i < amountOfBrokenDetails; i++)
             {
-                _brokenParts.Add(_spareParts[_random.Next(0, _spareParts.Count)]);
+                _brokenParts.Add(spareParts[_random.Next(0, spareParts.Count)]);
             }
             for (int i = 0; i < _brokenParts.Count - 1; i++)
             {
@@ -209,11 +206,6 @@ namespace CarService
         {
             return _brokenParts[index].RepairCost;
         }
-
-        public string GetPart(int index)
-        {
-            return _spareParts[index].Name;
-        }
     }
 
     class Detail
@@ -225,11 +217,6 @@ namespace CarService
         {
             Name = name;
             RepairCost = repairCost;
-        }
-
-        public void ShowInfo()
-        {
-            Console.WriteLine(Name + " - " + RepairCost + " денег");
         }
     }
 }
