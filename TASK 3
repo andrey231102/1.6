@@ -9,12 +9,12 @@ namespace server
     {
         static void Main(string[] args)
         {
-            DataBase dataBase = new DataBase();
-            dataBase.Menu();
+            Database dataBase = new Database();
+            dataBase.Work();
         }
     }
 
-    class DataBase
+    class Database
     {
         private List<Player> _players = new List<Player>();
 
@@ -28,7 +28,7 @@ namespace server
             }
         }
 
-        public void Menu()
+        public void Work()
         {
             Console.WriteLine("Выберите, что хотите сделать: 1 - добавить игрока 2 -  удалить игрока  3 - забанить/разбанить игрока по порядковому номеру4 - покинуть программу");
             string userInput = default;
@@ -46,7 +46,7 @@ namespace server
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "3":
-                        BanUnbanPlayer();
+                        SetPlayerStatus();
                         Console.WriteLine("Выберите следующую команду");
                         break;
                     case "4":
@@ -60,16 +60,16 @@ namespace server
 
         }
 
-        public void AddPlayer()
+        private void AddPlayer()
         {
             Console.WriteLine("Введите идентификационный номер игрока: ");
-            int userInputNumber = CheckInput();
+            int userInputNumber = GetNumber();
 
             Console.WriteLine("Введите никнейм игрока: ");
             string userInputNickname = Console.ReadLine();
 
             Console.WriteLine("Введите уровень игрока: ");
-            int userInputLevel = CheckInput();
+            int userInputLevel = GetNumber();
             Player player = new Player(userInputNumber, userInputNickname, userInputLevel);
 
             Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
@@ -79,7 +79,28 @@ namespace server
             Console.WriteLine("Игрок добавлен");
         }
 
-        public void RemovePlayer()
+        private int FindPlayerByNumber()
+        {
+            int playerNumber = default;
+            bool isWorking = true;
+            while (isWorking)
+            {
+                ShowData();
+                Console.WriteLine("Введите порядковый номер игрока, которого хотите удалить");
+                playerNumber = GetNumber() - 1;
+                if (playerNumber < _players.Count && playerNumber > -1)
+                {
+                    isWorking = false;
+                }
+                else
+                {
+                    Console.WriteLine("Вам нужно ввести номер уже существующего игрока");
+                }
+            }
+            return playerNumber;
+        }
+
+        private void RemovePlayer()
         {
             if (_players.Count <= 0)
             {
@@ -87,22 +108,12 @@ namespace server
             }
             else
             {
-                ShowData();
-                Console.WriteLine("Введите порядковый номер игрока, которого хотите удалить");
-                int findPlayerNumber = CheckInput() - 1;
-                if (findPlayerNumber > _players.Count || findPlayerNumber < 0)
-                {
-                    Console.WriteLine("Таких данных нету, введите другую команду");
-                }
-                else
-                {
-                    _players.RemoveAt(findPlayerNumber);
-                    Console.WriteLine("Игрок удален, введите следующую команду");
-                }
+                _players.RemoveAt(FindPlayerByNumber());
+                Console.WriteLine("Игрок удален, введите следующую команду");
             }
         }
 
-        public int CheckInput()
+        private int GetNumber()
         {
             int userInput = default;
             bool isWorking = true;
@@ -114,13 +125,13 @@ namespace server
                 }
                 else
                 {
-                    Console.WriteLine("Уровнем игрока должно быть число");
+                    Console.WriteLine("Введите число");
                 }
             }
             return userInput;
         }
 
-        public void BanUnbanPlayer()
+        private void SetPlayerStatus()
         {
             if (_players.Count <= 0)
             {
@@ -128,22 +139,12 @@ namespace server
             }
             else
             {
-                ShowData();
-                Console.WriteLine("Введите порядковый номер игрока, которого хотите забанить/разбанить");
-                int findPlayerNumber = Convert.ToInt32(Console.ReadLine()) - 1;
-
-                if (findPlayerNumber > _players.Count || findPlayerNumber < 0)
-                {
-                    Console.WriteLine("Таких данных нету");
-                }
-                else
-                {
-                    Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
-                    _players[findPlayerNumber].SetBanStatus();
-                }
+                Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
+                _players[FindPlayerByNumber()].SetBanStatus();
             }
         }
     }
+
     class Player
     {
         private string _nickname;
@@ -171,17 +172,29 @@ namespace server
                 inputPlayerStatus = Console.ReadLine();
                 if (inputPlayerStatus == "да")
                 {
-                    _isBanned = true;
+                    _isBanned = Ban();
                 }
                 else if (inputPlayerStatus == "нет")
                 {
-                    _isBanned = false;
+                    _isBanned = Unban();
                 }
                 else
                 {
                     Console.WriteLine("Ошибка ввода, попробуйте еще раз");
                 }
             }
+        }
+
+        private bool Ban()
+        {
+            _isBanned = true;
+            return _isBanned;
+        }
+
+        private bool Unban()
+        {
+            _isBanned = false;
+            return _isBanned;
         }
     }
 }
