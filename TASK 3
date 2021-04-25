@@ -57,13 +57,11 @@ namespace server
                         break;
                 }
             }
-
         }
 
         private void AddPlayer()
         {
-            Console.WriteLine("Введите идентификационный номер игрока: ");
-            int userInputNumber = GetNumber();
+            int userInputNumber = SetIdentityNumber();
 
             Console.WriteLine("Введите никнейм игрока: ");
             string userInputNickname = Console.ReadLine();
@@ -72,11 +70,84 @@ namespace server
             int userInputLevel = GetNumber();
             Player player = new Player(userInputNumber, userInputNickname, userInputLevel);
 
-            Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
             player.SetBanStatus();
             
             _players.Add(player);
             Console.WriteLine("Игрок добавлен");
+        }
+
+        private void RemovePlayer()
+        {
+            if (_players.Count <= 0)
+            {
+                Console.WriteLine("База данных пустая, попробуйте кого-то добавить");
+            }
+            else
+            {
+                _players.RemoveAt(FindPlayerByNumber());
+                Console.WriteLine("Игрок удален, введите следующую команду");
+            }
+        }
+
+        private int SetIdentityNumber()
+        {
+            int userInputNumber = default;
+            bool isWorking = true;
+            Console.WriteLine("Введите идентификационный номер игрока: ");
+            do
+            {
+                userInputNumber = GetNumber();
+                if (_players.Count == 0)
+                {
+                    isWorking = false;
+                }
+                else
+                {
+                    for (int i = 0; i < _players.Count; i++)
+                    {
+                        if (userInputNumber == _players[i]._identityNumber)
+                        {
+                            Console.WriteLine("такой идентификационный номер уже есть, попробуйте еще раз");
+                        }
+                        else
+                        {
+                            isWorking = false;
+                        }
+                    }
+                }
+            } 
+            while (isWorking);
+            return userInputNumber;
+        }
+
+        private void SetPlayerStatus()
+        {
+            if (_players.Count <= 0)
+            {
+                Console.WriteLine("База данных пустая, попробуйте кого-то добавить");
+            }
+            else
+            {
+                _players[FindPlayerByNumber()].SetBanStatus();
+            }
+        }
+
+        private int GetNumber()
+        {
+            int userInput = default;
+            bool isWorking = true;
+            while (isWorking)
+            {
+                if (int.TryParse(Console.ReadLine(), out userInput))
+                {
+                    isWorking = false;
+                }
+                else
+                {
+                    Console.WriteLine("Введите число");
+                }
+            }
+            return userInput;
         }
 
         private int FindPlayerByNumber()
@@ -100,83 +171,42 @@ namespace server
             return playerNumber;
         }
 
-        private void RemovePlayer()
-        {
-            if (_players.Count <= 0)
-            {
-                Console.WriteLine("База данных пустая, попробуйте кого-то добавить");
-            }
-            else
-            {
-                _players.RemoveAt(FindPlayerByNumber());
-                Console.WriteLine("Игрок удален, введите следующую команду");
-            }
-        }
-
-        private int GetNumber()
-        {
-            int userInput = default;
-            bool isWorking = true;
-            while (isWorking)
-            {
-                if (int.TryParse(Console.ReadLine(), out userInput))
-                {
-                    isWorking = false;
-                }
-                else
-                {
-                    Console.WriteLine("Введите число");
-                }
-            }
-            return userInput;
-        }
-
-        private void SetPlayerStatus()
-        {
-            if (_players.Count <= 0)
-            {
-                Console.WriteLine("База данных пустая, попробуйте кого-то добавить");
-            }
-            else
-            {
-                Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
-                _players[FindPlayerByNumber()].SetBanStatus();
-            }
-        }
     }
 
     class Player
     {
         private string _nickname;
-        private int _number;
         private bool _isBanned;
         private int _level;
 
+        public int _identityNumber { get; private set; }
+
         public Player(int number, string nickname, int level)
         {
-            _number = number;
+            _identityNumber = number;
             _nickname = nickname;
             _level = level;
         }
 
         public void ShowPlayer()
         {
-            Console.Write($"Номер игрока - {_number}\t Ник - {_nickname}\t Статус бана - {_isBanned}\t Уровень - {_level} ");
+            Console.Write($"Номер игрока - {_identityNumber}\t Ник - {_nickname}\t Статус бана - {_isBanned}\t Уровень - {_level} ");
         }
 
         public void SetBanStatus()
         {
+            Console.WriteLine("Статус бана игрока, напишите: да(забанен)или нет(незабанен)");
             string inputPlayerStatus = default;
             while (inputPlayerStatus != "да" && inputPlayerStatus != "нет")
             {
                 inputPlayerStatus = Console.ReadLine();
                 if (inputPlayerStatus == "да")
                 {
-                    _isBanned = Ban();
+                    _isBanned = true;
                 }
                 else if (inputPlayerStatus == "нет")
                 {
-                    _isBanned = Unban();
+                    _isBanned = unban();
                 }
                 else
                 {
@@ -185,16 +215,9 @@ namespace server
             }
         }
 
-        private bool Ban()
+        public bool unban()
         {
-            _isBanned = true;
-            return _isBanned;
-        }
-
-        private bool Unban()
-        {
-            _isBanned = false;
-            return _isBanned;
+            return false;
         }
     }
 }
