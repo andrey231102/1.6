@@ -17,8 +17,9 @@ namespace CarService
 
     class AutoService
     {
-        private Random _random = new Random();
         private int _income;
+        private Random _random = new Random();
+        private Queue<Car> _brokenCars = new Queue<Car>();
         private Dictionary<string, int> _wareHouse = new Dictionary<string, int>();
 
         public void CreateWarehouse(Car car)
@@ -30,7 +31,7 @@ namespace CarService
             }
         }
 
-        public void ShowWareHouse()
+        public void ShowWarehouse()
         {
             foreach (var detail in _wareHouse)
             {
@@ -38,7 +39,6 @@ namespace CarService
             }
         }
 
-        private Queue<Car> _brokenCars = new Queue<Car>();
         public void CreateCar(int amountOfBrokenCars)
         {
             for (int i = 0; i < amountOfBrokenCars; i++)
@@ -120,6 +120,7 @@ namespace CarService
                             case "1":
                                 _income -= car.GetDetailPrice(i);
                                 Console.WriteLine($"деталь {car.GetDetailName(i)} отсутствует на складе, выплачиваем штраф - {car.GetDetailPrice(i)} денег");
+                                isWorking = false;
                                 break;
                             case "2":
                                 if (_random.Next(0, 2) == 0)
@@ -142,15 +143,15 @@ namespace CarService
                     }
                 }
             }
-        Console.WriteLine($"в вашей копилке {_income}. на складе остались такие детали:");
-            ShowWareHouse();
+            Console.WriteLine($"в вашей копилке {_income}. на складе остались такие детали:");
+            ShowWarehouse();
         }
     }
 
     class Car
     {
-        private Random _random = new Random();
-        static private List<Detail> _spareParts = new List<Detail>
+        private static Random _random = new Random();
+        private List<Detail> _spareParts = new List<Detail>
         {
             new Detail("руль", 200),
             new Detail("коробка передач", 300),
@@ -175,7 +176,7 @@ namespace CarService
             }
             for (int i = 0; i < _brokenParts.Count - 1; i++)
             {
-                for (int t = i; t < _brokenParts.Count; t++)
+                for (int t = 1; t < _brokenParts.Count; t++)
                 {
                     if (_brokenParts[i] == _brokenParts[t] && t > i)
                     {
@@ -185,11 +186,6 @@ namespace CarService
             }
         }
 
-        public int BuyPart(int index)
-        {
-            return _brokenParts[index].RepairCost;
-        }
-
         public void ShowBrokenDetails()
         {
             Console.WriteLine("Мне нужно починить: ");
@@ -197,6 +193,11 @@ namespace CarService
             {
                 Console.WriteLine(brokenPart.Name + " " + brokenPart.RepairCost);
             }
+        }
+
+        public int BuyPart(int index)
+        {
+            return _brokenParts[index].RepairCost;
         }
 
         public string GetDetailName(int index)
@@ -232,4 +233,3 @@ namespace CarService
         }
     }
 }
-
