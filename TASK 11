@@ -111,48 +111,61 @@ namespace CarService
             ShowWarehouse();
             for (int i = 0; i < car.BrokenDetailsCount; i++)
             {
+                Console.WriteLine($"На какую деталь вы хотите заменить {car.GetDetailName(i)}. Напишите название этой детали или 1 если не хотите ее менять, но тогда заплатите штраф");
                 bool detailIsChanged = false ;
                 while (detailIsChanged == false)
                 {
-                    Console.WriteLine($"На какую деталь вы хотите заменить {car.GetDetailName(i)}. Напишите название этой детали или 1 если не хотите ее менять, но тогда заплатите штраф");
-                    string userInput = Console.ReadLine();
-                    if (car.GetDetailName(i) == userInput && _wareHouse.ContainsKey(userInput) && _wareHouse[userInput] > 0)
-                    {
-                        _income += car.GetDetailPrice(i);
-                        _wareHouse[userInput]--;
-                        detailIsChanged = true;
-                        Console.WriteLine("Вы успешно заменили деталь");
-                    }
-                    else if (car.GetDetailName(i) != userInput && _wareHouse.ContainsKey(userInput) && _wareHouse[userInput] > 0)
-                    {
-                        if (_random.Next(0, 2) == 0)
-                        {
-                            Console.WriteLine("Водитель не заметил подмену");
-                            _income += car.GetDetailPrice(i);
-                            _wareHouse[userInput]--;
-                            Console.WriteLine("Вы успешно заменили деталь");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Вас поймали на замене не той детали, вы выплатили водителю двойную цену за деталь {car.GetDetailName(i)} и потеряли деталь со склада - {_wareHouse[userInput]}");
-                            _income -= 2 * car.GetDetailPrice(i);
-                            _wareHouse[userInput]--;
-                        }
-                        detailIsChanged = true;
-                    }
-                    else if (userInput == "1")
-                    {
-                        Console.WriteLine($"вы возместили водителю цену за {car.GetDetailName(i)}");
-                        _income -= car.GetDetailPrice(i);
-                        detailIsChanged = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Такой детали на складе нету, попробуйте еще раз");
-                    }
+                    detailIsChanged = ChooseReplacementPart(car, i);
+                    Console.WriteLine();
                 }
             }
             Console.WriteLine($"в вашей копилке {_income}.");
+        }
+
+        public void ReplaceWrongPart(Car car, string userInput, int index)
+        {
+            if (_random.Next(0, 2) == 0)
+            {
+                Console.WriteLine("Водитель не заметил подмену");
+                _income += car.GetDetailPrice(index);
+                _wareHouse[userInput]--;
+                Console.WriteLine("Вы успешно заменили деталь");
+            }
+            else
+            {
+                Console.WriteLine($"Вас поймали на замене не той детали, вы выплатили водителю двойную цену за деталь {car.GetDetailName(index)} и потеряли деталь {userInput}");
+                _income -= 2 * car.GetDetailPrice(index);
+                _wareHouse[userInput]--;
+            }
+        }
+
+        public bool ChooseReplacementPart(Car car, int index)
+        {
+            string userInput = Console.ReadLine();
+            if (car.GetDetailName(index) == userInput && _wareHouse.ContainsKey(userInput) && _wareHouse[userInput] > 0)
+            {
+                _income += car.GetDetailPrice(index);
+                _wareHouse[userInput]--;
+                Console.WriteLine("Вы успешно заменили деталь");
+                return true;
+            }
+            else if (car.GetDetailName(index) != userInput && _wareHouse.ContainsKey(userInput) && _wareHouse[userInput] > 0)
+            {
+                ReplaceWrongPart(car, userInput, index);
+                return true;
+            }
+            else if (userInput == "1")
+            {
+                Console.WriteLine($"вы возместили водителю цену за {car.GetDetailName(index)}");
+                _income -= car.GetDetailPrice(index);
+                Console.WriteLine();
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Такой детали на складе нету, попробуйте еще раз");
+                return false;
+            }
         }
     }
 
