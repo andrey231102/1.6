@@ -206,18 +206,13 @@ namespace server
                 }
                 else if (inputPlayerStatus == "нет")
                 {
-                    _isBanned = unban();
+                    _isBanned = false;
                 }
                 else
                 {
                     Console.WriteLine("Ошибка ввода, попробуйте еще раз");
                 }
             }
-        }
-
-        public bool unban()
-        {
-            return false;
         }
     }
 }
