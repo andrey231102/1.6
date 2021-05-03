@@ -2,13 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
+
 namespace database
 {
-//Реализовать базу данных игроков и методы для работы с ней.
-//У игрока может быть порядковый номер, ник, уровень, флаг – забанен ли он(флаг - bool).
-//Реализовать возможность добавления игрока, бана игрока по порядковому номеру, разбана игрока по порядковому номеру и удаление игрока.
-//Создание самой БД не требуется, задание выполняется инструментами, которые вы уже изучили в рамках курса.
     class Program
     {
         static void Main(string[] args)
@@ -21,7 +17,8 @@ namespace database
     class Database
     {
         private List<Player> _players = new List<Player>();
-        public void ShowData()
+
+        private void ShowData()
         {
             for (int i = 0; i < _players.Count; i++)
             {
@@ -31,38 +28,7 @@ namespace database
             }
         }
 
-        public void Work()
-        {
-            Console.WriteLine("Выберите, что хотите сделать: 1 - добавить игрока 2 -  удалить игрока  3 - забанить/разбанить игрока по порядковому номеру4 - покинуть программу");
-            string userInput = default;
-            while (userInput != "4")
-            {
-                userInput = Console.ReadLine();
-                switch (userInput)
-                {
-                    case "1":
-                        AddPlayer();
-                        Console.WriteLine("Выберите следующую команду");
-                        break;
-                    case "2":
-                        RemovePlayer();
-                        Console.WriteLine("Выберите следующую команду");
-                        break;
-                    case "3":
-                        //SetPlayerStatus();
-                        Console.WriteLine("Выберите следующую команду");
-                        break;
-                    case "4":
-                        Console.WriteLine("Вы покинули программу");
-                        break;
-                    default:
-                        Console.WriteLine("Такого делать мы не умеем");
-                        break;
-                }
-            }
-        }
-
-        public void AddPlayer()
+        private void AddPlayer()
         {
             int userInputNumber = SetIdentityNumber(_players);
 
@@ -71,7 +37,7 @@ namespace database
 
             Console.WriteLine("Введите уровень игрока: ");
             int userInputLevel = GetNumber();
-            Player player = new Player(userInputNickname, userInputNumber, userInputLevel);
+            Player player = new Player(userInputNickname, userInputNumber, userInputLevel, false);
 
             _players.Add(player);
             Console.WriteLine("Игрок добавлен");
@@ -91,15 +57,15 @@ namespace database
                 }
                 else
                 {
-                    if (players.Any(player => player.IdentityNumber == userInputNumber))
+                    if (players.Exists(player => player.IdentityNumber == userInputNumber))
                     {
-                        Console.WriteLine("пользователь с таким номером уже есть");
+                        Console.WriteLine("пользователь с таким номером уже есть, попробуйте еще раз");
                     }
                     else
                     {
                         isWorking = false;
                     }
-                }  
+                }
             }
             return userInputNumber;
         }
@@ -124,7 +90,7 @@ namespace database
             while (isWorking)
             {
                 ShowData();
-                Console.WriteLine("Введите порядковый номер игрока, которого хотите удалить");
+                Console.WriteLine("Введите порядковый номер игрока");
                 playerNumber = GetNumber() - 1;
                 if (playerNumber < _players.Count && playerNumber > -1)
                 {
@@ -155,25 +121,110 @@ namespace database
             }
             return userInput;
         }
+
+        private void SetPlayerStatus()
+        {
+            if (_players.Count <= 0)
+            {
+                Console.WriteLine("База данных пустая, попробуйте кого-то добавить");
+            }
+            else
+            {
+                Console.WriteLine("1 - ЗАБАНИТЬ 2 - РАЗБАНИТЬ");
+                string userInput = Console.ReadLine();
+                int playerIndex = FindPlayerByNumber();
+                switch (userInput)
+                {
+                    case "1":
+                        BanPlayer(playerIndex);
+                        break;
+                    case "2":
+                        UnbanPlayer(playerIndex);
+                        break;
+                    default:
+                        Console.WriteLine("такой функции нету");
+                        break;
+                }
+            }
+        }
+
+        private void BanPlayer(int index) 
+        {
+            _players[index].Ban();
+            Console.WriteLine($"игрок под номером {index+1} забанен");
+        }
+
+        private void UnbanPlayer(int index) 
+        {
+            _players[index].Unban();
+            Console.WriteLine($"игрок под номером {index+1} разбанен");
+        }
+
+        public void Work()
+        {
+            Console.WriteLine("Выберите, что хотите сделать: 1 - добавить игрока 2 -  удалить игрока  3 - забанить/разбанить игрока по порядковому номеру 4 - показать всех игроков 5 - выйти из программы23");
+            string userInput = default;
+            while (userInput != "5")
+            {
+                userInput = Console.ReadLine();
+                switch (userInput)
+                {
+                    case "1":
+                        AddPlayer();
+                        Console.WriteLine("Выберите следующую команду");
+                        break;
+                    case "2":
+                        RemovePlayer();
+                        Console.WriteLine("Выберите следующую команду");
+                        break;
+                    case "3":
+                        SetPlayerStatus();
+                        Console.WriteLine("Выберите следующую команду");
+                        break;
+                    case "4":
+                        ShowData();
+                        Console.WriteLine("Выберите следующую команду");
+                        break;
+                    case "5":
+                        Console.WriteLine("Вы покинули программу");
+                        break;
+                    default:
+                        Console.WriteLine("Такого делать мы не умеем");
+                        break;
+                }
+            }
+        }
     }
 
     class Player
     {
         private string _nickname;
         private int _level;
-        
+        private bool _ban;
+
         public int IdentityNumber { get; }
 
-        public Player(string nickname, int serialNumber, int level)
+        public Player(string nickname, int serialNumber, int level, bool ban)
         {
             _nickname = nickname;
             IdentityNumber = serialNumber;
             _level = level;
+            _ban = ban;
         }
 
         public void ShowPlayer()
         {
-            Console.Write($"Номер игрока - {IdentityNumber}\t Ник - {_nickname}\t Уровень - {_level} ");
+            Console.Write($"Номер игрока - {IdentityNumber}\t Ник - {_nickname}\t Уровень - {_level}\t Забанен - {_ban}" );
+        }
+
+        public void Ban() 
+        { 
+            _ban = true; 
+        }
+
+        public void Unban() 
+        { 
+            _ban = false;
         }
     }
 }
