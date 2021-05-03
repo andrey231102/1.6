@@ -173,11 +173,11 @@ namespace database
         private string _nickname;
         private int _level;
         private bool _ban;
-        private int ID;
+        private int _iD;
 
         public Player(string nickname, int level)
         {
-            ID = firstIDValue++;
+            _iD = firstIDValue++;
             _nickname = nickname;
             _level = level;
             _ban = false;
@@ -185,7 +185,7 @@ namespace database
 
         public void ShowPlayer()
         {
-            Console.Write($"ID - {ID}\t Ник - {_nickname}\t Уровень - {_level}\t Забанен - {_ban}" );
+            Console.Write($"ID - {_iD}\t Ник - {_nickname}\t Уровень - {_level}\t Забанен - {_ban}" );
         }
 
         public void Ban() 
