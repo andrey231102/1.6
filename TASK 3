@@ -30,44 +30,15 @@ namespace database
 
         private void AddPlayer()
         {
-            int userInputNumber = SetIdentityNumber(_players);
-
             Console.WriteLine("Введите никнейм игрока: ");
             string userInputNickname = Console.ReadLine();
 
             Console.WriteLine("Введите уровень игрока: ");
             int userInputLevel = GetNumber();
-            Player player = new Player(userInputNickname, userInputNumber, userInputLevel, false);
+            Player player = new Player(userInputNickname, userInputLevel);
 
             _players.Add(player);
             Console.WriteLine("Игрок добавлен");
-        }
-
-        private int SetIdentityNumber(List<Player> players)
-        {
-            int userInputNumber = default;
-            bool isWorking = true;
-            Console.WriteLine("Введите идентификационный номер игрока: ");
-            while (isWorking)
-            {
-                userInputNumber = GetNumber();
-                if (_players.Count == 0)
-                {
-                    isWorking = false;
-                }
-                else
-                {
-                    if (players.Exists(player => player.IdentityNumber == userInputNumber))
-                    {
-                        Console.WriteLine("пользователь с таким номером уже есть, попробуйте еще раз");
-                    }
-                    else
-                    {
-                        isWorking = false;
-                    }
-                }
-            }
-            return userInputNumber;
         }
 
         private void RemovePlayer()
@@ -78,12 +49,12 @@ namespace database
             }
             else
             {
-                _players.RemoveAt(FindPlayerByNumber());
+                _players.RemoveAt(FindPlayerNumber());
                 Console.WriteLine("Игрок удален, введите следующую команду");
             }
         }
 
-        private int FindPlayerByNumber()
+        private int FindPlayerNumber()
         {
             int playerNumber = default;
             bool isWorking = true;
@@ -132,7 +103,7 @@ namespace database
             {
                 Console.WriteLine("1 - ЗАБАНИТЬ 2 - РАЗБАНИТЬ");
                 string userInput = Console.ReadLine();
-                int playerIndex = FindPlayerByNumber();
+                int playerIndex = FindPlayerNumber();
                 switch (userInput)
                 {
                     case "1":
@@ -198,23 +169,23 @@ namespace database
 
     class Player
     {
+        private static int firstIDValue = 100;
         private string _nickname;
         private int _level;
         private bool _ban;
+        private int ID;
 
-        public int IdentityNumber { get; }
-
-        public Player(string nickname, int serialNumber, int level, bool ban)
+        public Player(string nickname, int level)
         {
+            ID = firstIDValue++;
             _nickname = nickname;
-            IdentityNumber = serialNumber;
             _level = level;
-            _ban = ban;
+            _ban = false;
         }
 
         public void ShowPlayer()
         {
-            Console.Write($"Номер игрока - {IdentityNumber}\t Ник - {_nickname}\t Уровень - {_level}\t Забанен - {_ban}" );
+            Console.Write($"ID - {ID}\t Ник - {_nickname}\t Уровень - {_level}\t Забанен - {_ban}" );
         }
 
         public void Ban() 
